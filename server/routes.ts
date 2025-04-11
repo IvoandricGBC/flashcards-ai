@@ -441,6 +441,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate flashcards directly from text input
+  app.post("/api/generate-from-text", async (req: Request, res: Response) => {
+    try {
+      const { text, title, description } = req.body;
+      
+      if (!text) {
+        return res.status(400).json({ message: "Text content is required" });
+      }
+      
+      if (!title) {
+        return res.status(400).json({ message: "Collection title is required" });
+      }
+      
+      // Validate text length
+      const wordCount = text.split(/\s+/).length;
+      if (wordCount > 5000) {
+        return res.status(400).json({ 
+          message: "Text exceeds maximum allowed length of 5000 words",
+          wordCount 
+        });
+      }
+      
+      // Create a new collection
+      const collection = await storage.createCollection({
+        title,
+        description: description || "",
+        favorite: false,
+        userId: null
+      });
+      
+      // Generate flashcards from the text
+      const flashcards = await generateFlashcardsFromText(text, {
+        generateDefinitions: true,
+        generateConcepts: true,
+        includeMultipleChoice: true
+      });
+      
+      // Set the collection ID for the flashcards
+      flashcards.forEach(card => {
+        card.collectionId = collection.id;
+      });
+      
+      // Save the flashcards
+      const savedFlashcards = await storage.createFlashcards(flashcards);
+      
+      // Create a document record to track the text source
+      const document = await storage.createDocument({
+        fileName: `text_input_${new Date().toISOString()}`,
+        fileSize: Buffer.from(text).length,
+        fileType: "text/plain",
+        collectionId: collection.id,
+        content: null // We don't store the full content in the database
+      });
+      
+      // Create generation activity
+      await storage.createActivity({
+        type: "generation",
+        description: `Generated ${savedFlashcards.length} flashcards from manual text input for "${collection.title}"`,
+        entityId: collection.id,
+        entityType: "collection",
+        userId: null
+      });
+      
+      res.status(201).json({
+        collection,
+        document,
+        flashcardsCount: savedFlashcards.length
+      });
+    } catch (error) {
+      console.error("Error generating flashcards from text:", error);
+      res.status(500).json({
+        message: "Failed to generate flashcards",
+        error: (error as Error).message
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
