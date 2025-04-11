@@ -11,7 +11,7 @@ import {
   insertActivitySchema 
 } from "@shared/schema";
 import { processDocumentAndGenerateFlashcards, processDocumentBuffer, extractPdfText, extractWordText } from "./lib/document-processor";
-import { generateSummaryFromText } from "./lib/openai";
+import { generateSummaryFromText, generateFlashcardsFromText } from "./lib/openai";
 import { z } from "zod";
 
 // Set up multer for file uploads
@@ -479,7 +479,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Set the collection ID for the flashcards
-      flashcards.forEach(card => {
+      flashcards.forEach((card: any) => {
         card.collectionId = collection.id;
       });
       
