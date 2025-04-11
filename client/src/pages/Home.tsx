@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Activity as ActivityType } from "@shared/schema";
 import { format, formatDistanceToNow } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 
 export default function Home() {
   const { data: activities, isLoading } = useQuery<ActivityType[]>({
@@ -21,16 +21,16 @@ export default function Home() {
     <div className="container mx-auto p-4 lg:p-6">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Bienvenido a FlashLearn</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Welcome to FlashLearn</h1>
           <p className="text-gray-600 mt-1">
-            Transforme documentos en flashcards interactivas para aprender más eficientemente
+            Transform documents into interactive flashcards to learn more efficiently
           </p>
         </div>
         <div>
           <Link href="/upload">
             <Button className="bg-primary hover:bg-primary/90">
               <CloudUpload className="mr-2 h-4 w-4" />
-              Subir Documento
+              Upload Document
             </Button>
           </Link>
         </div>
@@ -39,8 +39,8 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Colecciones</CardTitle>
-            <CardDescription>Tus conjuntos de flashcards</CardDescription>
+            <CardTitle className="text-lg">Collections</CardTitle>
+            <CardDescription>Your flashcard sets</CardDescription>
           </CardHeader>
           <CardContent className="text-3xl font-bold text-primary">
             {isLoadingCollections ? (
@@ -51,15 +51,15 @@ export default function Home() {
           </CardContent>
           <CardFooter>
             <Link href="/collections">
-              <Button variant="outline" className="w-full">Ver colecciones</Button>
+              <Button variant="outline" className="w-full">View collections</Button>
             </Link>
           </CardFooter>
         </Card>
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Tarjetas Creadas</CardTitle>
-            <CardDescription>Total de flashcards generadas</CardDescription>
+            <CardTitle className="text-lg">Created Cards</CardTitle>
+            <CardDescription>Total flashcards generated</CardDescription>
           </CardHeader>
           <CardContent className="text-3xl font-bold text-secondary">
             {isLoadingCollections ? (
@@ -70,15 +70,15 @@ export default function Home() {
           </CardContent>
           <CardFooter>
             <Link href="/collections">
-              <Button variant="outline" className="w-full">Estudiar ahora</Button>
+              <Button variant="outline" className="w-full">Study now</Button>
             </Link>
           </CardFooter>
         </Card>
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Último Quiz</CardTitle>
-            <CardDescription>Tu sesión de estudio más reciente</CardDescription>
+            <CardTitle className="text-lg">Latest Quiz</CardTitle>
+            <CardDescription>Your most recent study session</CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -86,23 +86,23 @@ export default function Home() {
             ) : (
               activities?.find(a => a.type === "quiz") ? (
                 <div className="text-xl font-bold text-success">
-                  {activities.find(a => a.type === "quiz")?.description.split(" en ")[0]}
+                  {activities.find(a => a.type === "quiz")?.description.split(" in ")[0]}
                 </div>
               ) : (
-                <div className="text-gray-500 italic">Sin actividad reciente</div>
+                <div className="text-gray-500 italic">No recent activity</div>
               )
             )}
           </CardContent>
           <CardFooter>
             <Link href="/collections">
-              <Button variant="outline" className="w-full">Iniciar nuevo quiz</Button>
+              <Button variant="outline" className="w-full">Start new quiz</Button>
             </Link>
           </CardFooter>
         </Card>
       </div>
 
       <div>
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Actividad Reciente</h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Recent Activity</h2>
         
         <Card>
           {isLoading ? (
@@ -128,7 +128,7 @@ export default function Home() {
                     <p className="text-xs text-gray-500 mt-1">
                       {formatDistanceToNow(new Date(activity.createdAt), { 
                         addSuffix: true,
-                        locale: es
+                        locale: enUS
                       })}
                     </p>
                   </div>
@@ -139,8 +139,8 @@ export default function Home() {
           ) : (
             <div className="p-8 text-center text-gray-500">
               <Activity className="mx-auto h-12 w-12 text-gray-400 mb-3" />
-              <h3 className="text-lg font-medium mb-1">Sin actividades</h3>
-              <p className="text-sm">Comienza a usar FlashLearn para ver tu actividad reciente aquí</p>
+              <h3 className="text-lg font-medium mb-1">No activities</h3>
+              <p className="text-sm">Start using FlashLearn to see your recent activity here</p>
             </div>
           )}
         </Card>
@@ -183,15 +183,15 @@ function ActivityIcon({ type }: { type: string }) {
 function getActivityTitle(type: string): string {
   switch (type) {
     case "upload":
-      return "Documento subido";
+      return "Document uploaded";
     case "generation":
-      return "Tarjetas generadas";
+      return "Cards generated";
     case "create":
-      return "Colección creada";
+      return "Collection created";
     case "quiz":
-      return "Quiz completado";
+      return "Quiz completed";
     default:
-      return "Actividad";
+      return "Activity";
   }
 }
 

@@ -17,10 +17,10 @@ export function Sidebar() {
   const storageUsage = Math.min(Math.max((collectionCount / 30) * 100, 5), 100);
   
   const navItems = [
-    { path: "/", label: "Inicio", icon: <Navigation className="w-5 h-5" /> },
-    { path: "/upload", label: "Subir Documentos", icon: <CloudUpload className="w-5 h-5" /> },
-    { path: "/collections", label: "Mis Flashcards", icon: <CreditCard className="w-5 h-5" /> },
-    { path: "/settings", label: "Configuración", icon: <Settings className="w-5 h-5" /> },
+    { path: "/", label: "Home", icon: <Navigation className="w-5 h-5" /> },
+    { path: "/upload", label: "Upload Documents", icon: <CloudUpload className="w-5 h-5" /> },
+    { path: "/collections", label: "My Flashcards", icon: <CreditCard className="w-5 h-5" /> },
+    { path: "/settings", label: "Settings", icon: <Settings className="w-5 h-5" /> },
   ];
   
   return (
@@ -57,9 +57,9 @@ export function Sidebar() {
       <div className="mt-auto p-4">
         <Separator className="my-4" />
         <div className="bg-gray-100 p-3 rounded-lg">
-          <h3 className="font-medium text-sm text-gray-700 mb-2">Uso de almacenamiento</h3>
+          <h3 className="font-medium text-sm text-gray-700 mb-2">Storage Usage</h3>
           <Progress className="h-2" value={storageUsage} />
-          <p className="text-xs text-gray-500 mt-1">{collectionCount} colecciones ({Math.round(storageUsage)}%)</p>
+          <p className="text-xs text-gray-500 mt-1">{collectionCount} collections ({Math.round(storageUsage)}%)</p>
         </div>
       </div>
     </div>
