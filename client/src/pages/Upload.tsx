@@ -57,8 +57,8 @@ export default function Upload() {
     },
     onSuccess: (data) => {
       toast({
-        title: "Documento procesado exitosamente",
-        description: `Se generaron ${data.flashcardsCount} tarjetas para la colección "${data.collection.title}"`,
+        title: "Document processed successfully",
+        description: `${data.flashcardsCount} flashcards were generated for collection "${data.collection.title}"`,
         variant: "default",
       });
       
@@ -67,8 +67,8 @@ export default function Upload() {
     },
     onError: (error) => {
       toast({
-        title: "Error al procesar el documento",
-        description: error instanceof Error ? error.message : "Ocurrió un error inesperado",
+        title: "Error processing document",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
         variant: "destructive",
       });
     },
@@ -100,32 +100,32 @@ export default function Upload() {
   return (
     <div className="container mx-auto p-4 max-w-3xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Subir Documento</h1>
-        <p className="text-gray-600">Sube un documento PDF o Word para generar flashcards</p>
+        <h1 className="text-2xl font-bold text-gray-800">Upload Document</h1>
+        <p className="text-gray-600">Upload a PDF or Word document to generate flashcards</p>
       </div>
       
       <form onSubmit={handleSubmit}>
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Información de la colección</CardTitle>
-            <CardDescription>Proporciona detalles sobre la colección de flashcards que se creará</CardDescription>
+            <CardTitle>Collection Information</CardTitle>
+            <CardDescription>Provide details about the flashcard collection that will be created</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="collection-name">Nombre de la colección</Label>
+              <Label htmlFor="collection-name">Collection name</Label>
               <Input
                 id="collection-name"
-                placeholder="Ej: Biología Celular"
+                placeholder="Example: Cell Biology"
                 value={collectionName}
                 onChange={(e) => setCollectionName(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="collection-description">Descripción (opcional)</Label>
+              <Label htmlFor="collection-description">Description (optional)</Label>
               <Input
                 id="collection-description"
-                placeholder="Ej: Conceptos fundamentales sobre la célula y sus componentes"
+                placeholder="Example: Fundamental concepts about cells and their components"
                 value={collectionDescription}
                 onChange={(e) => setCollectionDescription(e.target.value)}
               />
@@ -135,8 +135,8 @@ export default function Upload() {
         
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Documento</CardTitle>
-            <CardDescription>Sube un documento PDF o Word (máximo 10MB)</CardDescription>
+            <CardTitle>Document</CardTitle>
+            <CardDescription>Upload a PDF or Word document (maximum 10MB)</CardDescription>
           </CardHeader>
           <CardContent>
             {selectedFile ? (
@@ -168,8 +168,8 @@ export default function Upload() {
         {isOptionsVisible && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Opciones de generación</CardTitle>
-              <CardDescription>Personaliza cómo se generarán tus flashcards</CardDescription>
+              <CardTitle>Generation Options</CardTitle>
+              <CardDescription>Customize how your flashcards will be generated</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -185,10 +185,10 @@ export default function Upload() {
                       htmlFor="opt-definitions"
                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
-                      Generar tarjetas de definiciones
+                      Generate definition cards
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Crea tarjetas para términos y definiciones importantes
+                      Create cards for important terms and definitions
                     </p>
                   </div>
                 </div>
@@ -205,10 +205,10 @@ export default function Upload() {
                       htmlFor="opt-concepts"
                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
-                      Generar tarjetas de conceptos clave
+                      Generate key concept cards
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Crea tarjetas para conceptos e ideas principales
+                      Create cards for main concepts and ideas
                     </p>
                   </div>
                 </div>
@@ -225,10 +225,10 @@ export default function Upload() {
                       htmlFor="opt-multiple"
                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
-                      Incluir opciones múltiples
+                      Include multiple choice options
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Agrega opciones de respuesta múltiple a cada tarjeta
+                      Add multiple choice answer options to each card
                     </p>
                   </div>
                 </div>
