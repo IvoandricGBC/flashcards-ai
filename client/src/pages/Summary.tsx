@@ -1,15 +1,18 @@
-import { PageHeader } from "@/components/layout/PageHeader";
 import { DocumentSummary } from "@/components/summary/DocumentSummary";
 import { BookOpen, AlignJustify } from "lucide-react";
 
 export default function Summary() {
   return (
     <div className="container py-8">
-      <PageHeader
-        title="Document Summary"
-        description="Generate concise summaries from your documents"
-        icon={BookOpen}
-      />
+      <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-8">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+          <BookOpen className="h-8 w-8 text-primary" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Document Summary</h1>
+          <p className="text-muted-foreground">Generate concise summaries from your documents</p>
+        </div>
+      </div>
       
       <div className="mt-8 grid grid-cols-1 gap-8">
         <div className="space-y-4">

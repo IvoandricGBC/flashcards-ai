@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, FileText, ArrowRight, FileUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import jsPDF from "jspdf";
 import { apiRequest } from "@/lib/queryClient";
 
 interface DocumentSummaryProps {
@@ -157,23 +158,103 @@ export function DocumentSummary({ collectionId, documentId, documentName }: Docu
           </div>
         )}
       </CardContent>
-      <CardFooter className="flex justify-end">
-        <Button 
-          onClick={generateSummary} 
-          disabled={isLoading || (!file && !documentId)}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            <>
-              Generate Summary
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </>
-          )}
-        </Button>
+      <CardFooter className="flex justify-between">
+        {summary ? (
+          <>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  // Create document for download
+                  const blob = new Blob([summary], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `summary-${new Date().toISOString().split('T')[0]}.docx`;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                  
+                  toast({
+                    title: "Word document saved",
+                    description: "Summary was saved as a Word document."
+                  });
+                }}
+              >
+                Save as Word
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  // Create PDF for download using jsPDF
+                  const doc = new jsPDF();
+                  
+                  // Add title
+                  doc.setFontSize(18);
+                  doc.text("Document Summary", 20, 20);
+                  
+                  // Add creation date
+                  doc.setFontSize(10);
+                  doc.setTextColor(100, 100, 100);
+                  doc.text(`Generated on ${new Date().toLocaleDateString()}`, 20, 30);
+                  
+                  // Add the summary text with proper word wrapping
+                  doc.setFontSize(12);
+                  doc.setTextColor(0, 0, 0);
+                  
+                  // Split text into paragraphs and add them
+                  const textLines = doc.splitTextToSize(summary, 170);
+                  doc.text(textLines, 20, 40);
+                  
+                  // Save the PDF
+                  doc.save(`summary-${new Date().toISOString().split('T')[0]}.pdf`);
+                  
+                  toast({
+                    title: "PDF saved",
+                    description: "Summary was saved as a PDF document."
+                  });
+                }}
+              >
+                Save as PDF
+              </Button>
+            </div>
+            
+            <Button onClick={generateSummary} disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  Generate New Summary
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </>
+        ) : (
+          <div className="ml-auto">
+            <Button 
+              onClick={generateSummary} 
+              disabled={isLoading || (!file && !documentId)}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  Generate Summary
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </CardFooter>
     </Card>
   );
