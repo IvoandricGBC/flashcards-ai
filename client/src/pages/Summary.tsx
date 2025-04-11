@@ -1,17 +1,27 @@
 import { DocumentSummary } from "@/components/summary/DocumentSummary";
-import { BookOpen, AlignJustify } from "lucide-react";
+import { BookOpen, AlignJustify, Home } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 export default function Summary() {
   return (
     <div className="container py-8">
-      <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-8">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-          <BookOpen className="h-8 w-8 text-primary" />
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+            <BookOpen className="h-8 w-8 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Document Summary</h1>
+            <p className="text-muted-foreground">Generate concise summaries from your documents</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Document Summary</h1>
-          <p className="text-muted-foreground">Generate concise summaries from your documents</p>
-        </div>
+        <Link href="/">
+          <Button variant="outline" className="flex items-center gap-2">
+            <Home className="h-4 w-4" />
+            Volver al menú principal
+          </Button>
+        </Link>
       </div>
       
       <div className="mt-8 grid grid-cols-1 gap-8">
