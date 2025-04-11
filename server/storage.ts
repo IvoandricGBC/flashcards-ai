@@ -7,7 +7,6 @@ import {
   type QuizSession, type InsertQuizSession,
   type Activity, type InsertActivity
 } from "@shared/schema";
-
 export interface IStorage {
   // User methods
   getUser(id: number): Promise<User | undefined>;
