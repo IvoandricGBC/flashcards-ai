@@ -1,5 +1,6 @@
 import { pgTable, text, serial, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
+import { relations } from "drizzle-orm";
 import { z } from "zod";
 
 // Users table for authentication
@@ -21,7 +22,7 @@ export const collections = pgTable("collections", {
   description: text("description"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   favorite: boolean("favorite").default(false),
-  userId: integer("user_id"),
+  userId: integer("user_id").references(() => users.id),
 });
 
 export const insertCollectionSchema = createInsertSchema(collections).pick({
@@ -37,7 +38,7 @@ export const flashcards = pgTable("flashcards", {
   question: text("question").notNull(),
   correctAnswer: text("correct_answer").notNull(),
   options: text("options").array().notNull(),
-  collectionId: integer("collection_id").notNull(),
+  collectionId: integer("collection_id").notNull().references(() => collections.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -54,7 +55,7 @@ export const documents = pgTable("documents", {
   fileName: text("file_name").notNull(),
   fileSize: integer("file_size").notNull(),
   fileType: text("file_type").notNull(),
-  collectionId: integer("collection_id").notNull(),
+  collectionId: integer("collection_id").notNull().references(() => collections.id),
   content: text("content"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -70,8 +71,8 @@ export const insertDocumentSchema = createInsertSchema(documents).pick({
 // Quiz session keeps track of user's quiz activity
 export const quizSessions = pgTable("quiz_sessions", {
   id: serial("id").primaryKey(),
-  collectionId: integer("collection_id").notNull(),
-  userId: integer("user_id"),
+  collectionId: integer("collection_id").notNull().references(() => collections.id),
+  userId: integer("user_id").references(() => users.id),
   score: integer("score").notNull(),
   totalQuestions: integer("total_questions").notNull(),
   completedAt: timestamp("completed_at").defaultNow().notNull(),
@@ -102,6 +103,55 @@ export const insertActivitySchema = createInsertSchema(activities).pick({
   entityId: true,
   entityType: true,
 });
+
+// Define relations between tables
+export const usersRelations = relations(users, ({ many }) => ({
+  collections: many(collections),
+  quizSessions: many(quizSessions),
+  activities: many(activities),
+}));
+
+export const collectionsRelations = relations(collections, ({ one, many }) => ({
+  user: one(users, {
+    fields: [collections.userId],
+    references: [users.id],
+  }),
+  flashcards: many(flashcards),
+  documents: many(documents),
+  quizSessions: many(quizSessions),
+}));
+
+export const flashcardsRelations = relations(flashcards, ({ one }) => ({
+  collection: one(collections, {
+    fields: [flashcards.collectionId],
+    references: [collections.id],
+  }),
+}));
+
+export const documentsRelations = relations(documents, ({ one }) => ({
+  collection: one(collections, {
+    fields: [documents.collectionId],
+    references: [collections.id],
+  }),
+}));
+
+export const quizSessionsRelations = relations(quizSessions, ({ one }) => ({
+  user: one(users, {
+    fields: [quizSessions.userId],
+    references: [users.id],
+  }),
+  collection: one(collections, {
+    fields: [quizSessions.collectionId],
+    references: [collections.id],
+  }),
+}));
+
+export const activitiesRelations = relations(activities, ({ one }) => ({
+  user: one(users, {
+    fields: [activities.userId],
+    references: [users.id],
+  }),
+}));
 
 // Types for TypeScript
 export type User = typeof users.$inferSelect;
