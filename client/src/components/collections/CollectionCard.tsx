@@ -41,7 +41,7 @@ export function CollectionCard({ collection }: CollectionCardProps) {
     onError: () => {
       toast({
         title: "Error",
-        description: "No se pudo actualizar el estado de favorito",
+        description: "Could not update favorite status",
         variant: "destructive",
       });
     },
@@ -55,15 +55,15 @@ export function CollectionCard({ collection }: CollectionCardProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/collections'] });
       toast({
-        title: "Colección eliminada",
-        description: `"${collection.title}" ha sido eliminada`,
+        title: "Collection deleted",
+        description: `"${collection.title}" has been deleted`,
         variant: "default",
       });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "No se pudo eliminar la colección",
+        description: "Could not delete the collection",
         variant: "destructive",
       });
     },
@@ -104,7 +104,7 @@ export function CollectionCard({ collection }: CollectionCardProps) {
   };
   
   const handleDelete = () => {
-    if (confirm(`¿Estás seguro de que deseas eliminar la colección "${collection.title}"?`)) {
+    if (confirm(`Are you sure you want to delete the collection "${collection.title}"?`)) {
       deleteCollectionMutation.mutate();
     }
   };
@@ -123,13 +123,13 @@ export function CollectionCard({ collection }: CollectionCardProps) {
       <CardContent className="p-5">
         <h3 className="text-lg font-semibold mb-1">{collection.title}</h3>
         <p className="text-gray-600 text-sm mb-3">
-          {collection.description || "Sin descripción"}
+          {collection.description || "No description"}
         </p>
         
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-500 flex items-center gap-1">
             <FileText className="h-4 w-4" />
-            <span>{/* Replace with actual count when available */} tarjetas</span>
+            <span>{/* Replace with actual count when available */} cards</span>
           </span>
           
           <DropdownMenu>

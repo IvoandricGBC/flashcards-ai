@@ -54,7 +54,7 @@ export function CollectionDetail({ collection, flashcards, onBack }: CollectionD
       <div className="mb-6">
         <Button variant="ghost" className="mb-4" onClick={onBack}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Volver a colecciones
+          Back to collections
         </Button>
         
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
