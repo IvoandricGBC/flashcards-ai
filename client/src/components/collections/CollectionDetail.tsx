@@ -82,34 +82,46 @@ export function CollectionDetail({ collection, flashcards, onBack }: CollectionD
         </div>
       </div>
       
-      <div className="mb-6">
-        <h2 className="text-lg font-medium mb-4">
-          Cards ({flashcards ? flashcards.length : 0})
-        </h2>
-        
-        {/* Log for debugging */}
-        {console.log('Rendering flashcards:', flashcards)}
-        
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-medium">
+            Cards ({flashcards ? flashcards.length : 0})
+          </h2>
+          
+          {flashcards && flashcards.length > 0 && (
+            <p className="text-sm text-gray-500">
+              {visibleCards} of {flashcards.length} cards shown
+            </p>
+          )}
+        </div>
+
         {!flashcards || flashcards.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No cards</h3>
+          <div className="text-center py-12 bg-white rounded-lg border border-gray-200 shadow-sm">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No cards found</h3>
             <p className="text-gray-500 mb-4">This collection doesn't have any flashcards or they are still loading.</p>
           </div>
         ) : (
-          <div className="space-y-6">
-            {flashcards.slice(0, visibleCards).map((flashcard) => (
-              <FlashCard key={flashcard.id} flashcard={flashcard} />
-            ))}
+          <>
+            {/* Responsive grid layout for cards */}
+            <div className="md:flashcards-grid space-y-6 md:space-y-0">
+              {flashcards.slice(0, visibleCards).map((flashcard) => (
+                <FlashCard key={flashcard.id} flashcard={flashcard} />
+              ))}
+            </div>
             
             {visibleCards < flashcards.length && (
-              <div className="text-center mt-4">
-                <Button variant="ghost" onClick={loadMoreCards} className="mx-auto">
+              <div className="text-center mt-8">
+                <Button 
+                  variant="outline" 
+                  onClick={loadMoreCards} 
+                  className="mx-auto px-6 py-2 border-primary/30 hover:border-primary"
+                >
                   <ChevronDown className="mr-2 h-4 w-4" />
-                  View more cards
+                  Load more cards ({flashcards.length - visibleCards} remaining)
                 </Button>
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>

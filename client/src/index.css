@@ -11,3 +11,93 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+/* Flashcard animations and styles */
+@layer components {
+  .card-flip {
+    @apply perspective-1000 relative w-full;
+  }
+
+  .card-flip-inner {
+    @apply relative transform-style-3d transition-transform duration-500 w-full h-full;
+  }
+
+  .card-flip.flipped .card-flip-inner {
+    @apply rotate-y-180;
+  }
+
+  .card-front, .card-back {
+    @apply absolute backface-hidden w-full h-full rounded-lg overflow-hidden;
+  }
+
+  .card-back {
+    @apply rotate-y-180;
+  }
+  
+  .flashcard-transition {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  
+  .flashcard-hover {
+    @apply hover:shadow-lg hover:scale-[1.02] active:scale-[0.98];
+  }
+}
+
+/* Custom utility classes */
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+}
+
+/* Custom scrollbar styles */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Responsive adjustments for flashcards */
+@media (max-width: 640px) {
+  .card-flip-inner {
+    min-height: 250px;
+  }
+  
+  .card-front, .card-back {
+    padding: 0.75rem;
+  }
+}
+
+/* Adjust flashcards grid layout */
+@media (min-width: 768px) {
+  .flashcards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+}
