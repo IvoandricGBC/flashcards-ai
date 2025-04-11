@@ -41,11 +41,14 @@ export function FlashCard({ flashcard }: FlashCardProps) {
             
             <h4 className="font-medium mb-2">Other options:</h4>
             <ul className="space-y-2">
-              {flashcard.options
-                .filter(option => option !== flashcard.correctAnswer)
-                .map((option, index) => (
-                  <li key={index} className="bg-white p-2 rounded">{option}</li>
-                ))}
+              {flashcard.options && flashcard.options.length > 0 
+                ? flashcard.options
+                    .filter(option => option !== flashcard.correctAnswer)
+                    .map((option, index) => (
+                      <li key={index} className="bg-white p-2 rounded">{option}</li>
+                    ))
+                : <li className="text-gray-500 italic">No additional options available</li>
+              }
             </ul>
           </div>
           <div className="p-4 text-center">

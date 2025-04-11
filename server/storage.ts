@@ -188,11 +188,41 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteCollection(id: number): Promise<boolean> {
-    const deleted = await db
-      .delete(collections)
-      .where(eq(collections.id, id))
-      .returning({ id: collections.id });
-    return deleted.length > 0;
+    try {
+      // First delete all related flashcards
+      await db
+        .delete(flashcards)
+        .where(eq(flashcards.collectionId, id));
+      
+      // Delete all related documents
+      await db
+        .delete(documents)
+        .where(eq(documents.collectionId, id));
+      
+      // Delete all related quiz sessions
+      await db
+        .delete(quizSessions)
+        .where(eq(quizSessions.collectionId, id));
+      
+      // Delete related activities
+      await db
+        .delete(activities)
+        .where(and(
+          eq(activities.entityType, "collection"),
+          eq(activities.entityId, id)
+        ));
+      
+      // Finally delete the collection
+      const deleted = await db
+        .delete(collections)
+        .where(eq(collections.id, id))
+        .returning({ id: collections.id });
+        
+      return deleted.length > 0;
+    } catch (error) {
+      console.error("Error deleting collection:", error);
+      throw error;
+    }
   }
 
   // Flashcard methods
