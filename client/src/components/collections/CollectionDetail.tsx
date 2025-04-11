@@ -84,13 +84,16 @@ export function CollectionDetail({ collection, flashcards, onBack }: CollectionD
       
       <div className="mb-6">
         <h2 className="text-lg font-medium mb-4">
-          Cards ({flashcards.length})
+          Cards ({flashcards ? flashcards.length : 0})
         </h2>
         
-        {flashcards.length === 0 ? (
+        {/* Log for debugging */}
+        {console.log('Rendering flashcards:', flashcards)}
+        
+        {!flashcards || flashcards.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
             <h3 className="text-lg font-medium text-gray-900 mb-2">No cards</h3>
-            <p className="text-gray-500 mb-4">This collection doesn't have any flashcards.</p>
+            <p className="text-gray-500 mb-4">This collection doesn't have any flashcards or they are still loading.</p>
           </div>
         ) : (
           <div className="space-y-6">

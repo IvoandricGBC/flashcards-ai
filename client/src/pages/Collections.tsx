@@ -23,10 +23,16 @@ export default function Collections() {
   });
   
   // If a collection ID is provided, get the flashcards for that collection
-  const { data: flashcards } = useQuery<Flashcard[]>({
-    queryKey: ['/api/collections', collectionId, 'flashcards'],
+  const { data: flashcards, isLoading: isLoadingFlashcards, isError, error } = useQuery<Flashcard[]>({
+    queryKey: [`/api/collections/${collectionId}/flashcards`],
     enabled: !!collectionId,
   });
+  
+  // Log for debugging
+  console.log('Collection ID:', collectionId);
+  console.log('Flashcards:', flashcards);
+  console.log('Is loading flashcards:', isLoadingFlashcards);
+  console.log('Is error:', isError, error);
   
   // Get the selected collection
   const selectedCollection = collections?.find(c => c.id === collectionId);
