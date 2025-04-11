@@ -58,7 +58,7 @@ export function ApiStatusIndicator({ onRefresh }: ApiStatusIndicatorProps) {
   
   let description = status === "success" ? 
     "The OpenAI API key is valid and ready to process documents." : 
-    (status === "error" ? errorMessage : "Could not verify the API status");
+    (status === "error" ? `${errorMessage} Please update your API key with a valid OpenAI key that has available credit.` : "Could not verify the API status");
 
   return (
     <Alert variant={alertVariant} className="mb-6">

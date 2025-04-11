@@ -291,7 +291,7 @@ export default function Upload() {
               )}
             </Button>
             <p className="text-xs text-center text-gray-500">
-              Note: Document processing requires a valid OpenAI API key with available credit
+              Note: Document processing requires a valid OpenAI API key with available credit. The GPT-4o model (used for flashcard generation) requires a paid account with sufficient balance.
             </p>
           </div>
         </div>
