@@ -37,8 +37,8 @@ export function Sidebar() {
           {navItems.map((item) => (
             <li key={item.path} className="mb-2">
               <Link href={item.path}>
-                <a
-                  className={`flex items-center gap-2 p-2 rounded hover:bg-gray-100 font-medium ${
+                <div
+                  className={`flex items-center gap-2 p-2 rounded hover:bg-gray-100 font-medium cursor-pointer ${
                     (location === item.path || 
                     (item.path === "/collections" && location.startsWith("/collections/")))
                       ? "bg-primary bg-opacity-10 text-primary"
@@ -47,7 +47,7 @@ export function Sidebar() {
                 >
                   {item.icon}
                   {item.label}
-                </a>
+                </div>
               </Link>
             </li>
           ))}

@@ -28,6 +28,11 @@ export async function generateFlashcardsFromText(
   options: GenerateOptions = {}
 ): Promise<InsertFlashcard[]> {
   try {
+    // Validate OpenAI API key
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error("OpenAI API key is not configured");
+    }
+
     // Prepare the content for the prompt
     const contentChunks = chunkText(text, 4000);
     const allFlashcards: InsertFlashcard[] = [];
@@ -36,41 +41,54 @@ export async function generateFlashcardsFromText(
     for (const chunk of contentChunks) {
       const systemPrompt = buildSystemPrompt(options);
       
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt
-          },
-          {
-            role: "user",
-            content: `Aquí está el texto del documento para generar flashcards:\n\n${chunk}`
+      try {
+        const response = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: systemPrompt
+            },
+            {
+              role: "user",
+              content: `Here is the document text to generate flashcards from:\n\n${chunk}`
+            }
+          ],
+          response_format: { type: "json_object" }
+        });
+
+        if (!response.choices[0]?.message.content) {
+          throw new Error("No response from OpenAI API");
+        }
+
+        const content = response.choices[0].message.content;
+        const parsedResponse = JSON.parse(content) as GenerationResponse;
+        
+        if (!parsedResponse.flashcards || !Array.isArray(parsedResponse.flashcards)) {
+          throw new Error("Invalid response format from OpenAI API");
+        }
+
+        // Convert the response to our schema format
+        const chunkFlashcards: InsertFlashcard[] = parsedResponse.flashcards.map(card => ({
+          question: card.question,
+          correctAnswer: card.correctAnswer,
+          options: card.options,
+          collectionId: 0 // This will be set by the caller
+        }));
+
+        allFlashcards.push(...chunkFlashcards);
+      } catch (error) {
+        // Handle API-specific errors
+        if (error instanceof Error) {
+          const errorMessage = error.message;
+          if (errorMessage.includes("exceeded your current quota") || 
+              errorMessage.includes("insufficient_quota")) {
+            throw new Error("OpenAI API quota exceeded. Please update your API key.");
           }
-        ],
-        response_format: { type: "json_object" }
-      });
-
-      if (!response.choices[0]?.message.content) {
-        throw new Error("No response from OpenAI API");
+        }
+        // Re-throw the error to be caught by the outer try-catch
+        throw error;
       }
-
-      const content = response.choices[0].message.content;
-      const parsedResponse = JSON.parse(content) as GenerationResponse;
-      
-      if (!parsedResponse.flashcards || !Array.isArray(parsedResponse.flashcards)) {
-        throw new Error("Invalid response format from OpenAI API");
-      }
-
-      // Convert the response to our schema format
-      const chunkFlashcards: InsertFlashcard[] = parsedResponse.flashcards.map(card => ({
-        question: card.question,
-        correctAnswer: card.correctAnswer,
-        options: card.options,
-        collectionId: 0 // This will be set by the caller
-      }));
-
-      allFlashcards.push(...chunkFlashcards);
     }
 
     return allFlashcards;
@@ -90,38 +108,38 @@ function buildSystemPrompt(options: GenerateOptions): string {
     includeMultipleChoice = true
   } = options;
 
-  let prompt = `Eres un experto en crear flashcards educativas basadas en textos académicos. 
-Tu tarea es analizar el siguiente texto y generar preguntas tipo trivia con sus respuestas.
+  let prompt = `You are an expert in creating educational flashcards based on academic texts. 
+Your task is to analyze the following text and generate trivia-style questions with their answers.
 
-REQUISITOS DE FORMATO:
-- Genera preguntas claras y concisas
-- Las preguntas deben probar conocimientos importantes del texto
-- Todas las preguntas deben tener exactamente 4 opciones de respuesta
-- Una de las opciones debe ser la respuesta correcta
-- Las 3 opciones incorrectas deben ser plausibles pero incorrectas
-- Responde con un objeto JSON que contiene un array de flashcards con la siguiente estructura:
+FORMAT REQUIREMENTS:
+- Generate clear and concise questions
+- Questions should test important knowledge from the text
+- All questions must have exactly 4 answer options
+- One of the options must be the correct answer
+- The 3 incorrect options should be plausible but incorrect
+- Respond with a JSON object containing an array of flashcards with the following structure:
 {
   "flashcards": [
     {
-      "question": "La pregunta completa",
-      "correctAnswer": "La respuesta correcta",
-      "options": ["Opción 1 (correcta)", "Opción 2", "Opción 3", "Opción 4"]
+      "question": "The complete question",
+      "correctAnswer": "The correct answer",
+      "options": ["Option 1 (correct)", "Option 2", "Option 3", "Option 4"]
     }
   ]
 }
 
-IMPORTANTE: Asegúrate de que la respuesta correcta aparezca tanto en el campo "correctAnswer" como en el array "options".`;
+IMPORTANT: Make sure the correct answer appears both in the "correctAnswer" field and in the "options" array.`;
 
   if (generateDefinitions) {
-    prompt += `\n\nIncluye preguntas sobre definiciones importantes y términos clave que aparecen en el texto.`;
+    prompt += `\n\nInclude questions about important definitions and key terms that appear in the text.`;
   }
 
   if (generateConcepts) {
-    prompt += `\n\nIncluye preguntas sobre conceptos fundamentales explicados en el texto.`;
+    prompt += `\n\nInclude questions about fundamental concepts explained in the text.`;
   }
 
   if (!includeMultipleChoice) {
-    prompt += `\n\nAunque necesito generar opciones múltiples para mantener el formato, estas flashcards se usarán para preguntas de respuesta directa.`;
+    prompt += `\n\nAlthough I need to generate multiple options to maintain the format, these flashcards will be used for direct answer questions.`;
   }
 
   return prompt;

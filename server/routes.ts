@@ -198,7 +198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Create upload activity
         await storage.createActivity({
           type: "upload",
-          description: `Has subido "${req.file.originalname}"`,
+          description: `Uploaded "${req.file.originalname}"`,
           entityId: document.id,
           entityType: "document",
           userId: null
@@ -218,7 +218,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Create flashcard generation activity
         await storage.createActivity({
           type: "generation",
-          description: `Se han generado ${savedFlashcards.length} tarjetas para "${collection.title}"`,
+          description: `Generated ${savedFlashcards.length} flashcards for "${collection.title}"`,
           entityId: collection.id,
           entityType: "collection",
           userId: null

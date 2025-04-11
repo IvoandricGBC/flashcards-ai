@@ -66,11 +66,25 @@ export default function Upload() {
       navigate(`/collections/${data.collection.id}`);
     },
     onError: (error) => {
-      toast({
-        title: "Error processing document",
-        description: error instanceof Error ? error.message : "An unexpected error occurred",
-        variant: "destructive",
-      });
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      
+      // Check for specific OpenAI API errors
+      if (errorMessage.includes("OpenAI API quota exceeded") || 
+          errorMessage.includes("exceeded your current quota") ||
+          errorMessage.includes("insufficient_quota")) {
+        toast({
+          title: "OpenAI API Limit Reached",
+          description: "The API key has reached its usage limit. Please update the API key to continue processing documents.",
+          variant: "destructive",
+          duration: 10000, // Show for 10 seconds
+        });
+      } else {
+        toast({
+          title: "Error processing document",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
     },
   });
   
