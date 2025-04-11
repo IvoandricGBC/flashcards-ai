@@ -317,6 +317,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  
+  // Utility endpoint to clean duplicated Philosophy collections
+  app.post("/api/admin/clean-database", async (_req: Request, res: Response) => {
+    try {
+      // 1. Delete duplicate Philosophy collections (keep only one)
+      const philosophyCollections = await storage.getCollections();
+      const duplicateCollections = philosophyCollections.filter(c => c.title === "Philosophy");
+      
+      // Keep only the first Philosophy collection if multiple exist
+      if (duplicateCollections.length > 1) {
+        const collectionsToDelete = duplicateCollections.slice(1).map(c => c.id);
+        
+        // Delete each duplicate collection
+        for (const id of collectionsToDelete) {
+          await storage.deleteCollection(id);
+        }
+        
+        return res.json({ 
+          success: true, 
+          message: `Cleaned ${collectionsToDelete.length} duplicate Philosophy collections`,
+          deletedIds: collectionsToDelete 
+        });
+      }
+      
+      // No duplicates found
+      return res.json({ 
+        success: true, 
+        message: "No duplicate collections found to clean" 
+      });
+    } catch (error) {
+      console.error("Error cleaning database:", error);
+      return res.status(500).json({ 
+        success: false, 
+        message: `Error cleaning database: ${error instanceof Error ? error.message : "Unknown error"}` 
+      });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
