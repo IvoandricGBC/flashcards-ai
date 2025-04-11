@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import multer from "multer";
+import OpenAI from "openai";
 import { 
   insertCollectionSchema, 
   insertFlashcardSchema, 
@@ -274,6 +275,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(activities);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch activities" });
+    }
+  });
+
+  // OpenAI API status check endpoint
+  app.get("/api/status/openai", async (_req: Request, res: Response) => {
+    try {
+      // Check if API key exists
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(400).json({ 
+          status: "error", 
+          message: "OpenAI API key is not configured"
+        });
+      }
+
+      // Validate API key format
+      const apiKey = process.env.OPENAI_API_KEY;
+      if (!apiKey.startsWith('sk-') || apiKey.length < 40) {
+        return res.status(400).json({ 
+          status: "error", 
+          message: "Invalid API key format. OpenAI API keys should start with 'sk-'"
+        });
+      }
+
+      // Make a lightweight API call to check if the key works
+      const openai = new OpenAI({ apiKey });
+      const response = await openai.models.list();
+      
+      // If we get here, the API call succeeded
+      return res.status(200).json({ 
+        status: "ok", 
+        message: "OpenAI API key is valid"
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      const status = errorMessage.includes("401") ? 401 : 500;
+
+      return res.status(status).json({ 
+        status: "error", 
+        message: `OpenAI API error: ${errorMessage}`
+      });
     }
   });
 

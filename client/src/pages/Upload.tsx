@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DocumentUpload } from "@/components/upload/DocumentUpload";
+import { ApiStatusIndicator } from "@/components/api/ApiStatusIndicator";
 import { Loader2, FileX, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -120,6 +121,8 @@ export default function Upload() {
         <h1 className="text-2xl font-bold text-gray-800">Upload Document</h1>
         <p className="text-gray-600">Upload a PDF or Word document to generate flashcards</p>
       </div>
+      
+      <ApiStatusIndicator onRefresh={() => setShowApiError(false)} />
       
       {showApiError && (
         <Alert variant="destructive" className="mb-6">
