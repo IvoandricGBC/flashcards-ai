@@ -43,232 +43,51 @@ export interface IStorage {
   createActivity(activity: InsertActivity): Promise<Activity>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private collections: Map<number, Collection>;
-  private flashcards: Map<number, Flashcard>;
-  private documents: Map<number, Document>;
-  private quizSessions: Map<number, QuizSession>;
-  private activities: Map<number, Activity>;
+import { db } from './db';
+import { eq, desc, and } from 'drizzle-orm';
 
-  private userIdCounter: number;
-  private collectionIdCounter: number;
-  private flashcardIdCounter: number;
-  private documentIdCounter: number;
-  private quizSessionIdCounter: number;
-  private activityIdCounter: number;
-
+export class DatabaseStorage implements IStorage {
   constructor() {
-    this.users = new Map();
-    this.collections = new Map();
-    this.flashcards = new Map();
-    this.documents = new Map();
-    this.quizSessions = new Map();
-    this.activities = new Map();
-
-    this.userIdCounter = 1;
-    this.collectionIdCounter = 1;
-    this.flashcardIdCounter = 1;
-    this.documentIdCounter = 1;
-    this.quizSessionIdCounter = 1;
-    this.activityIdCounter = 1;
-
-    // Initialize with sample data
-    this.seedSampleData();
+    // Seed the database with sample data if needed
+    this.seedSampleData().catch(error => {
+      console.error("Error seeding database:", error);
+    });
   }
 
-  // User methods
-  async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userIdCounter++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
-  }
-
-  // Collection methods
-  async getCollections(): Promise<Collection[]> {
-    return Array.from(this.collections.values());
-  }
-
-  async getCollection(id: number): Promise<Collection | undefined> {
-    return this.collections.get(id);
-  }
-
-  async createCollection(insertCollection: InsertCollection): Promise<Collection> {
-    const id = this.collectionIdCounter++;
-    const now = new Date();
-    const collection: Collection = { 
-      ...insertCollection, 
-      id, 
-      createdAt: now
-    };
-    this.collections.set(id, collection);
-    return collection;
-  }
-
-  async updateCollection(id: number, updates: Partial<Collection>): Promise<Collection | undefined> {
-    const collection = this.collections.get(id);
-    if (!collection) return undefined;
-
-    const updatedCollection = { ...collection, ...updates };
-    this.collections.set(id, updatedCollection);
-    return updatedCollection;
-  }
-
-  async deleteCollection(id: number): Promise<boolean> {
-    return this.collections.delete(id);
-  }
-
-  // Flashcard methods
-  async getFlashcards(collectionId: number): Promise<Flashcard[]> {
-    return Array.from(this.flashcards.values()).filter(
-      (flashcard) => flashcard.collectionId === collectionId
-    );
-  }
-
-  async getFlashcard(id: number): Promise<Flashcard | undefined> {
-    return this.flashcards.get(id);
-  }
-
-  async createFlashcard(insertFlashcard: InsertFlashcard): Promise<Flashcard> {
-    const id = this.flashcardIdCounter++;
-    const now = new Date();
-    const flashcard: Flashcard = { 
-      ...insertFlashcard, 
-      id, 
-      createdAt: now 
-    };
-    this.flashcards.set(id, flashcard);
-    return flashcard;
-  }
-
-  async createFlashcards(insertFlashcards: InsertFlashcard[]): Promise<Flashcard[]> {
-    const createdFlashcards: Flashcard[] = [];
-    
-    for (const insertFlashcard of insertFlashcards) {
-      const flashcard = await this.createFlashcard(insertFlashcard);
-      createdFlashcards.push(flashcard);
+  private async seedSampleData() {
+    // Check if we already have collections in the database
+    const existingCollections = await db.select().from(collections);
+    if (existingCollections.length > 0) {
+      console.log("Database already has data, skipping seed");
+      return;
     }
     
-    return createdFlashcards;
-  }
-
-  async deleteFlashcard(id: number): Promise<boolean> {
-    return this.flashcards.delete(id);
-  }
-
-  // Document methods
-  async getDocuments(collectionId: number): Promise<Document[]> {
-    return Array.from(this.documents.values()).filter(
-      (document) => document.collectionId === collectionId
-    );
-  }
-
-  async getDocument(id: number): Promise<Document | undefined> {
-    return this.documents.get(id);
-  }
-
-  async createDocument(insertDocument: InsertDocument): Promise<Document> {
-    const id = this.documentIdCounter++;
-    const now = new Date();
-    const document: Document = { 
-      ...insertDocument, 
-      id, 
-      createdAt: now 
-    };
-    this.documents.set(id, document);
-    return document;
-  }
-
-  async deleteDocument(id: number): Promise<boolean> {
-    return this.documents.delete(id);
-  }
-
-  // Quiz methods
-  async createQuizSession(insertSession: InsertQuizSession): Promise<QuizSession> {
-    const id = this.quizSessionIdCounter++;
-    const now = new Date();
-    const session: QuizSession = { 
-      ...insertSession, 
-      id, 
-      completedAt: now 
-    };
-    this.quizSessions.set(id, session);
-    return session;
-  }
-
-  async getQuizSessionsByCollection(collectionId: number): Promise<QuizSession[]> {
-    return Array.from(this.quizSessions.values()).filter(
-      (session) => session.collectionId === collectionId
-    );
-  }
-
-  // Activity methods
-  async getRecentActivities(limit: number = 10): Promise<Activity[]> {
-    return Array.from(this.activities.values())
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice(0, limit);
-  }
-
-  async createActivity(insertActivity: InsertActivity): Promise<Activity> {
-    const id = this.activityIdCounter++;
-    const now = new Date();
-    const activity: Activity = { 
-      ...insertActivity, 
-      id, 
-      createdAt: now 
-    };
-    this.activities.set(id, activity);
-    return activity;
-  }
-
-  // Sample data for initial state
-  private seedSampleData() {
+    console.log("Seeding database with sample data...");
+    
     // Sample collections
-    const collection1: Collection = {
-      id: this.collectionIdCounter++,
+    const collection1 = await this.createCollection({
       title: "Cell Biology",
       description: "Fundamental concepts about cells and their components",
-      createdAt: new Date(),
       favorite: true,
       userId: null
-    };
+    });
     
-    const collection2: Collection = {
-      id: this.collectionIdCounter++,
+    const collection2 = await this.createCollection({
       title: "Contemporary History",
       description: "Major events of the 20th and 21st centuries",
-      createdAt: new Date(),
       favorite: false,
       userId: null
-    };
+    });
     
-    const collection3: Collection = {
-      id: this.collectionIdCounter++,
+    const collection3 = await this.createCollection({
       title: "Applied Statistics",
       description: "Statistical methods and data analysis",
-      createdAt: new Date(),
       favorite: false,
       userId: null
-    };
-    
-    this.collections.set(collection1.id, collection1);
-    this.collections.set(collection2.id, collection2);
-    this.collections.set(collection3.id, collection3);
+    });
     
     // Sample flashcards for Cell Biology
-    const flashcard1: Flashcard = {
-      id: this.flashcardIdCounter++,
+    await this.createFlashcard({
       question: "What is the main function of mitochondria in the cell?",
       correctAnswer: "Produce energy in the form of ATP through cellular respiration",
       options: [
@@ -277,12 +96,10 @@ export class MemStorage implements IStorage {
         "Store genetic information",
         "Digest foreign materials and cellular waste"
       ],
-      collectionId: collection1.id,
-      createdAt: new Date()
-    };
+      collectionId: collection1.id
+    });
     
-    const flashcard2: Flashcard = {
-      id: this.flashcardIdCounter++,
+    await this.createFlashcard({
       question: "Which organelle is responsible for protein synthesis in the cell?",
       correctAnswer: "Ribosome",
       options: [
@@ -291,48 +108,198 @@ export class MemStorage implements IStorage {
         "Lysosome",
         "Vacuole"
       ],
-      collectionId: collection1.id,
-      createdAt: new Date()
-    };
-    
-    this.flashcards.set(flashcard1.id, flashcard1);
-    this.flashcards.set(flashcard2.id, flashcard2);
+      collectionId: collection1.id
+    });
     
     // Sample activities
-    const activity1: Activity = {
-      id: this.activityIdCounter++,
+    await this.createActivity({
       type: "upload",
       description: "You uploaded \"Introduction to Cell Biology.pdf\"",
       userId: null,
       entityId: 1,
-      entityType: "document",
-      createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
-    };
+      entityType: "document"
+    });
     
-    const activity2: Activity = {
-      id: this.activityIdCounter++,
+    await this.createActivity({
       type: "generation",
       description: "Generated 24 cards for \"Cell Biology\"",
       userId: null,
       entityId: collection1.id,
-      entityType: "collection",
-      createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000) // 1 hour ago
-    };
+      entityType: "collection"
+    });
     
-    const activity3: Activity = {
-      id: this.activityIdCounter++,
+    await this.createActivity({
       type: "quiz",
       description: "You scored 18/20 in the \"Contemporary History\" quiz",
       userId: null,
       entityId: collection2.id,
-      entityType: "quiz",
-      createdAt: new Date(Date.now() - 30 * 60 * 1000) // 30 minutes ago
-    };
+      entityType: "quiz"
+    });
     
-    this.activities.set(activity1.id, activity1);
-    this.activities.set(activity2.id, activity2);
-    this.activities.set(activity3.id, activity3);
+    console.log("Database seeded successfully");
+  }
+  // User methods
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  // Collection methods
+  async getCollections(): Promise<Collection[]> {
+    return await db.select().from(collections);
+  }
+
+  async getCollection(id: number): Promise<Collection | undefined> {
+    const [collection] = await db
+      .select()
+      .from(collections)
+      .where(eq(collections.id, id));
+    return collection || undefined;
+  }
+
+  async createCollection(insertCollection: InsertCollection): Promise<Collection> {
+    const [collection] = await db
+      .insert(collections)
+      .values(insertCollection)
+      .returning();
+    return collection;
+  }
+
+  async updateCollection(id: number, updates: Partial<Collection>): Promise<Collection | undefined> {
+    const [updated] = await db
+      .update(collections)
+      .set(updates)
+      .where(eq(collections.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async deleteCollection(id: number): Promise<boolean> {
+    const deleted = await db
+      .delete(collections)
+      .where(eq(collections.id, id))
+      .returning({ id: collections.id });
+    return deleted.length > 0;
+  }
+
+  // Flashcard methods
+  async getFlashcards(collectionId: number): Promise<Flashcard[]> {
+    return await db
+      .select()
+      .from(flashcards)
+      .where(eq(flashcards.collectionId, collectionId));
+  }
+
+  async getFlashcard(id: number): Promise<Flashcard | undefined> {
+    const [flashcard] = await db
+      .select()
+      .from(flashcards)
+      .where(eq(flashcards.id, id));
+    return flashcard || undefined;
+  }
+
+  async createFlashcard(insertFlashcard: InsertFlashcard): Promise<Flashcard> {
+    const [flashcard] = await db
+      .insert(flashcards)
+      .values(insertFlashcard)
+      .returning();
+    return flashcard;
+  }
+
+  async createFlashcards(insertFlashcards: InsertFlashcard[]): Promise<Flashcard[]> {
+    if (insertFlashcards.length === 0) return [];
+    
+    return await db
+      .insert(flashcards)
+      .values(insertFlashcards)
+      .returning();
+  }
+
+  async deleteFlashcard(id: number): Promise<boolean> {
+    const deleted = await db
+      .delete(flashcards)
+      .where(eq(flashcards.id, id))
+      .returning({ id: flashcards.id });
+    return deleted.length > 0;
+  }
+
+  // Document methods
+  async getDocuments(collectionId: number): Promise<Document[]> {
+    return await db
+      .select()
+      .from(documents)
+      .where(eq(documents.collectionId, collectionId));
+  }
+
+  async getDocument(id: number): Promise<Document | undefined> {
+    const [document] = await db
+      .select()
+      .from(documents)
+      .where(eq(documents.id, id));
+    return document || undefined;
+  }
+
+  async createDocument(insertDocument: InsertDocument): Promise<Document> {
+    const [document] = await db
+      .insert(documents)
+      .values(insertDocument)
+      .returning();
+    return document;
+  }
+
+  async deleteDocument(id: number): Promise<boolean> {
+    const deleted = await db
+      .delete(documents)
+      .where(eq(documents.id, id))
+      .returning({ id: documents.id });
+    return deleted.length > 0;
+  }
+
+  // Quiz methods
+  async createQuizSession(insertSession: InsertQuizSession): Promise<QuizSession> {
+    const [session] = await db
+      .insert(quizSessions)
+      .values(insertSession)
+      .returning();
+    return session;
+  }
+
+  async getQuizSessionsByCollection(collectionId: number): Promise<QuizSession[]> {
+    return await db
+      .select()
+      .from(quizSessions)
+      .where(eq(quizSessions.collectionId, collectionId));
+  }
+
+  // Activity methods
+  async getRecentActivities(limit: number = 10): Promise<Activity[]> {
+    return await db
+      .select()
+      .from(activities)
+      .orderBy(desc(activities.createdAt))
+      .limit(limit);
+  }
+
+  async createActivity(insertActivity: InsertActivity): Promise<Activity> {
+    const [activity] = await db
+      .insert(activities)
+      .values(insertActivity)
+      .returning();
+    return activity;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
