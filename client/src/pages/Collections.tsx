@@ -162,7 +162,7 @@ export default function Collections() {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
             <Input
               type="search"
-              placeholder="Buscar colecciones..."
+              placeholder="Search collections..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-8 w-full sm:w-auto min-w-[200px]"
@@ -171,13 +171,13 @@ export default function Collections() {
           
           <Button variant="outline" className="gap-2">
             <Filter className="h-4 w-4" />
-            Filtrar
+            Filter
           </Button>
           
           <Link href="/upload">
             <Button className="gap-2 bg-primary hover:bg-primary/90 w-full sm:w-auto">
               <PlusCircle className="h-4 w-4" />
-              Nueva Colección
+              New Collection
             </Button>
           </Link>
         </div>

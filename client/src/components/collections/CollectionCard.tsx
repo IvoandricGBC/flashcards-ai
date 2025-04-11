@@ -33,8 +33,8 @@ export function CollectionCard({ collection }: CollectionCardProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/collections'] });
       toast({
-        title: collection.favorite ? "Eliminado de favoritos" : "Añadido a favoritos",
-        description: `"${collection.title}" ha sido ${collection.favorite ? "eliminado de" : "añadido a"} tus favoritos`,
+        title: collection.favorite ? "Removed from favorites" : "Added to favorites",
+        description: `"${collection.title}" has been ${collection.favorite ? "removed from" : "added to"} your favorites`,
         variant: "default",
       });
     },
@@ -144,7 +144,7 @@ export function CollectionCard({ collection }: CollectionCardProps) {
                 navigate(`/quiz/${collection.id}`);
               }}>
                 <PlayCircle className="mr-2 h-4 w-4" />
-                <span>Iniciar Quiz</span>
+                <span>Start Quiz</span>
               </DropdownMenuItem>
               
               <DropdownMenuItem onClick={(e) => {
@@ -152,7 +152,7 @@ export function CollectionCard({ collection }: CollectionCardProps) {
                 // Open edit form (not implemented)
               }}>
                 <Pencil className="mr-2 h-4 w-4" />
-                <span>Editar</span>
+                <span>Edit</span>
               </DropdownMenuItem>
               
               <DropdownMenuItem onClick={(e) => {
@@ -162,12 +162,12 @@ export function CollectionCard({ collection }: CollectionCardProps) {
                 {collection.favorite ? (
                   <>
                     <StarOff className="mr-2 h-4 w-4" />
-                    <span>Quitar de favoritos</span>
+                    <span>Remove from favorites</span>
                   </>
                 ) : (
                   <>
                     <Star className="mr-2 h-4 w-4" />
-                    <span>Añadir a favoritos</span>
+                    <span>Add to favorites</span>
                   </>
                 )}
               </DropdownMenuItem>
@@ -182,7 +182,7 @@ export function CollectionCard({ collection }: CollectionCardProps) {
                 }}
               >
                 <Trash className="mr-2 h-4 w-4" />
-                <span>Eliminar</span>
+                <span>Delete</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
