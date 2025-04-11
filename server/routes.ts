@@ -10,7 +10,8 @@ import {
   insertQuizSessionSchema,
   insertActivitySchema 
 } from "@shared/schema";
-import { processDocumentAndGenerateFlashcards } from "./lib/document-processor";
+import { processDocumentAndGenerateFlashcards, processDocumentBuffer, extractPdfText, extractWordText } from "./lib/document-processor";
+import { generateSummaryFromText } from "./lib/openai";
 import { z } from "zod";
 
 // Set up multer for file uploads
@@ -275,6 +276,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(activities);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch activities" });
+    }
+  });
+
+  // Generate summary from document
+  app.post("/api/documents/:id/summarize", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid document ID" });
+      }
+      
+      // Get document
+      const document = await storage.getDocument(id);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      
+      // Get collection to add the document summary
+      const collection = await storage.getCollection(document.collectionId);
+      if (!collection) {
+        return res.status(404).json({ message: "Collection not found" });
+      }
+      
+      // Get uploaded file content
+      if (!req.file) {
+        return res.status(400).json({ message: "Please reupload the document file" });
+      }
+      
+      // Process document to extract text
+      const text = await processDocumentBuffer(req.file.buffer, req.file.mimetype);
+      
+      // Generate summary
+      const summary = await generateSummaryFromText(text);
+      
+      // Create activity for summary generation
+      await storage.createActivity({
+        type: "summarize",
+        description: `Generated summary for "${document.fileName}"`,
+        entityId: document.id,
+        entityType: "document",
+        userId: null
+      });
+      
+      res.json({ summary });
+    } catch (error) {
+      console.error("Error generating summary:", error);
+      res.status(500).json({ 
+        message: "Failed to generate summary", 
+        error: (error as Error).message 
+      });
+    }
+  });
+  
+  // Document summarization direct route (without saving document)
+  app.post("/api/summarize", upload.single("document"), async (req: Request, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      
+      // Extract text from document
+      let documentText: string;
+      if (req.file.mimetype === "application/pdf") {
+        documentText = await extractPdfText(req.file.buffer);
+      } else {
+        documentText = await extractWordText(req.file.buffer);
+      }
+      
+      // Generate summary
+      const summary = await generateSummaryFromText(documentText);
+      
+      // Return the summary
+      res.json({ 
+        summary,
+        fileName: req.file.originalname,
+        fileSize: req.file.size,
+        wordCount: documentText.split(/\s+/).length,
+        summaryWordCount: summary.split(/\s+/).length
+      });
+    } catch (error) {
+      console.error("Error in direct summarization:", error);
+      res.status(500).json({ 
+        message: "Failed to generate summary", 
+        error: (error as Error).message 
+      });
     }
   });
 

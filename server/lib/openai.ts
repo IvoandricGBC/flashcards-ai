@@ -4,6 +4,10 @@ import { InsertFlashcard } from "@shared/schema";
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+interface SummaryResponse {
+  summary: string;
+}
+
 interface GenerateOptions {
   generateDefinitions?: boolean;
   generateConcepts?: boolean;
@@ -143,6 +147,103 @@ IMPORTANT: Make sure the correct answer appears both in the "correctAnswer" fiel
   }
 
   return prompt;
+}
+
+/**
+ * Generates a concise summary of document text using OpenAI
+ * The summary will be limited to approximately 500 words
+ */
+export async function generateSummaryFromText(text: string): Promise<string> {
+  try {
+    // Validate OpenAI API key
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error("OpenAI API key is not configured");
+    }
+
+    // Prepare the content - we might need to chunk the document if it's very large
+    const contentChunks = chunkText(text, 6000); // Use a larger chunk for summarization
+    
+    // If we have multiple chunks, summarize each one first then combine
+    if (contentChunks.length > 1) {
+      const chunkSummaries: string[] = [];
+      
+      for (const chunk of contentChunks) {
+        const summary = await summarizeSingleChunk(chunk, true);
+        chunkSummaries.push(summary);
+      }
+      
+      // Join the summaries and generate a final summary
+      const combinedSummaries = chunkSummaries.join("\n\n");
+      return await summarizeSingleChunk(combinedSummaries, false);
+    } else {
+      // If we only have one chunk, summarize it directly
+      return await summarizeSingleChunk(contentChunks[0], false);
+    }
+  } catch (error) {
+    console.error("Error generating summary:", error);
+    throw new Error("Failed to generate summary: " + (error as Error).message);
+  }
+}
+
+/**
+ * Helper function to summarize a single chunk of text
+ */
+async function summarizeSingleChunk(text: string, isPartialSummary: boolean): Promise<string> {
+  const wordLimit = isPartialSummary ? 250 : 500; // Use smaller limit for partial summaries
+  
+  const systemPrompt = `You are an expert in creating concise and informative summaries of academic texts.
+Your task is to analyze the following text and generate a summary.
+
+FORMAT REQUIREMENTS:
+- Create a clear, coherent, and informative summary
+- The summary should capture the main points, key concepts, and important conclusions
+- Limit the summary to approximately ${wordLimit} words
+- Focus on accuracy and clarity over detail
+- Respond with a JSON object with the following structure:
+{
+  "summary": "The complete summary text"
+}`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user",
+          content: `Here is the ${isPartialSummary ? "document section" : "document"} to summarize:\n\n${text}`
+        }
+      ],
+      response_format: { type: "json_object" }
+    });
+
+    if (!response.choices[0]?.message.content) {
+      throw new Error("No response from OpenAI API");
+    }
+
+    const content = response.choices[0].message.content;
+    const parsedResponse = JSON.parse(content) as SummaryResponse;
+    
+    if (!parsedResponse.summary) {
+      throw new Error("Invalid response format from OpenAI API");
+    }
+
+    return parsedResponse.summary;
+  } catch (error) {
+    // Handle API-specific errors
+    if (error instanceof Error) {
+      const errorMessage = error.message;
+      if (errorMessage.includes("exceeded your current quota") || 
+          errorMessage.includes("insufficient_quota")) {
+        throw new Error("OpenAI API quota exceeded. Please update your API key.");
+      }
+    }
+    // Re-throw the error
+    throw error;
+  }
 }
 
 /**
