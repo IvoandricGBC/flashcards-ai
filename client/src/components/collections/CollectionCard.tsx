@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Collection } from "@shared/schema";
+import { Collection, Flashcard } from "@shared/schema";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { 
   DropdownMenu, 
@@ -21,6 +21,20 @@ interface CollectionCardProps {
 export function CollectionCard({ collection }: CollectionCardProps) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const [cardCount, setCardCount] = useState<number | null>(null);
+  
+  // Fetch flashcards count for this collection
+  const { data: flashcards, isLoading: isLoadingFlashcards } = useQuery<Flashcard[]>({
+    queryKey: [`/api/collections/${collection.id}/flashcards`],
+    enabled: !!collection.id,
+  });
+  
+  // Update card count when data is loaded
+  useEffect(() => {
+    if (flashcards) {
+      setCardCount(flashcards.length);
+    }
+  }, [flashcards]);
   
   // Toggle favorite status mutation
   const toggleFavoriteMutation = useMutation({
@@ -111,8 +125,13 @@ export function CollectionCard({ collection }: CollectionCardProps) {
   
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={handleCardClick}>
-      <div className={`${getCardColorClass()} h-36 relative flex items-center justify-center`}>
+      <div className={`${getCardColorClass()} h-36 relative flex flex-col items-center justify-center`}>
         {getCardIcon()}
+        {cardCount === 0 && !isLoadingFlashcards && (
+          <span className="mt-3 text-xs px-2 py-1 bg-rose-100 text-rose-800 rounded-full">
+            Empty collection
+          </span>
+        )}
         {collection.favorite && (
           <span className="absolute top-4 right-4 text-secondary">
             <Star className="h-5 w-5 fill-secondary text-secondary" />
@@ -127,9 +146,19 @@ export function CollectionCard({ collection }: CollectionCardProps) {
         </p>
         
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-500 flex items-center gap-1">
+          <span className={`text-sm flex items-center gap-1 ${cardCount === 0 ? 'text-rose-500' : 'text-gray-500'}`}>
             <FileText className="h-4 w-4" />
-            <span>{/* Replace with actual count when available */} cards</span>
+            {isLoadingFlashcards ? (
+              <span>Loading...</span>
+            ) : (
+              <span>
+                {cardCount !== null ? (
+                  <>{cardCount} {cardCount === 1 ? 'card' : 'cards'} </>
+                ) : (
+                  '0 cards'
+                )}
+              </span>
+            )}
           </span>
           
           <DropdownMenu>
@@ -139,10 +168,22 @@ export function CollectionCard({ collection }: CollectionCardProps) {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/quiz/${collection.id}`);
-              }}>
+              <DropdownMenuItem 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (cardCount && cardCount > 0) {
+                    navigate(`/quiz/${collection.id}`);
+                  } else {
+                    toast({
+                      title: "Cannot start quiz",
+                      description: "This collection doesn't have any flashcards. Add some cards first.",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                disabled={cardCount === 0}
+                className={cardCount === 0 ? "opacity-50 cursor-not-allowed" : ""}
+              >
                 <PlayCircle className="mr-2 h-4 w-4" />
                 <span>Start Quiz</span>
               </DropdownMenuItem>
