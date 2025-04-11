@@ -39,8 +39,8 @@ export function DocumentUpload({ onFileSelected }: DocumentUploadProps) {
     
     if (!validTypes.includes(file.type)) {
       toast({
-        title: "Tipo de archivo no soportado",
-        description: "Por favor, sube un archivo PDF o Word (DOC/DOCX)",
+        title: "Unsupported file type",
+        description: "Please upload a PDF or Word (DOC/DOCX) file",
         variant: "destructive",
       });
       return false;
@@ -50,8 +50,8 @@ export function DocumentUpload({ onFileSelected }: DocumentUploadProps) {
     const maxSize = 10 * 1024 * 1024; // 10MB in bytes
     if (file.size > maxSize) {
       toast({
-        title: "Archivo demasiado grande",
-        description: "El tamaño máximo permitido es 10MB",
+        title: "File too large",
+        description: "Maximum allowed size is 10MB",
         variant: "destructive",
       });
       return false;
@@ -108,18 +108,18 @@ export function DocumentUpload({ onFileSelected }: DocumentUploadProps) {
       
       <div className="flex flex-col items-center">
         <Upload className="h-12 w-12 text-gray-400 mb-3" />
-        <p className="mb-2 font-medium">Arrastra y suelta archivos aquí</p>
-        <p className="text-sm text-gray-500 mb-4">o</p>
+        <p className="mb-2 font-medium">Drag and drop files here</p>
+        <p className="text-sm text-gray-500 mb-4">or</p>
         <Button
           type="button"
           className="bg-primary hover:bg-primary/90"
           onClick={handleBrowseClick}
         >
           <File className="mr-2 h-4 w-4" />
-          Seleccionar Archivos
+          Browse Files
         </Button>
         <p className="text-xs text-gray-500 mt-4">
-          Formatos soportados: PDF, DOC, DOCX (Máx. 10MB)
+          Supported formats: PDF, DOC, DOCX (Max. 10MB)
         </p>
       </div>
     </div>
