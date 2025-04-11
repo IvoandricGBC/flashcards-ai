@@ -6,6 +6,7 @@ import Home from "@/pages/Home";
 import Upload from "@/pages/Upload";
 import Collections from "@/pages/Collections";
 import Quiz from "@/pages/Quiz";
+import Summary from "@/pages/Summary";
 import NotFound from "@/pages/not-found";
 import { Sidebar } from "./components/layout/Sidebar";
 
@@ -20,6 +21,7 @@ function Router() {
           <Route path="/collections" component={Collections} />
           <Route path="/collections/:id" component={Collections} />
           <Route path="/quiz/:id" component={Quiz} />
+          <Route path="/summary" component={Summary} />
           <Route component={NotFound} />
         </Switch>
       </div>

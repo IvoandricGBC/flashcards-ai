@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { useQuery } from "@tanstack/react-query";
-import { School, CloudUpload, Navigation, Settings, CreditCard } from "lucide-react";
+import { School, CloudUpload, Navigation, Settings, CreditCard, BookOpen } from "lucide-react";
 
 export function Sidebar() {
   const [location] = useLocation();
@@ -20,6 +20,7 @@ export function Sidebar() {
     { path: "/", label: "Home", icon: <Navigation className="w-5 h-5" /> },
     { path: "/upload", label: "Upload Documents", icon: <CloudUpload className="w-5 h-5" /> },
     { path: "/collections", label: "My Flashcards", icon: <CreditCard className="w-5 h-5" /> },
+    { path: "/summary", label: "Document Summaries", icon: <BookOpen className="w-5 h-5" /> },
     { path: "/settings", label: "Settings", icon: <Settings className="w-5 h-5" /> },
   ];
   

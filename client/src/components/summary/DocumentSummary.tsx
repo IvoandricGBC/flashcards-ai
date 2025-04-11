@@ -48,10 +48,14 @@ export function DocumentSummary({ collectionId, documentId, documentName }: Docu
         formData.append("document", file);
         
         // Use the direct summarization endpoint
-        const response = await apiRequest("/api/summarize", {
+        const response = await fetch("/api/summarize", {
           method: "POST",
           body: formData,
         });
+        
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+        }
         
         const data = await response.json();
         setSummary(data.summary);
@@ -64,9 +68,13 @@ export function DocumentSummary({ collectionId, documentId, documentName }: Docu
         });
       } else if (documentId) {
         // Use the document-specific endpoint
-        const response = await apiRequest(`/api/documents/${documentId}/summarize`, {
+        const response = await fetch(`/api/documents/${documentId}/summarize`, {
           method: "POST",
         });
+        
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+        }
         
         const data = await response.json();
         setSummary(data.summary);
