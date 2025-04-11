@@ -66,12 +66,12 @@ export default function Collections() {
     if (filteredCollections?.length === 0) {
       return (
         <div className="text-center py-12">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No se encontraron colecciones</h3>
-          <p className="text-gray-500 mb-4">No hay colecciones que coincidan con tu búsqueda.</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No collections found</h3>
+          <p className="text-gray-500 mb-4">There are no collections that match your search.</p>
           <Link href="/upload">
             <Button>
               <PlusCircle className="mr-2 h-4 w-4" />
-              Crear nueva colección
+              Create new collection
             </Button>
           </Link>
         </div>
@@ -109,25 +109,25 @@ export default function Collections() {
                 value="all" 
                 className="px-6 py-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none data-[state=active]:shadow-none"
               >
-                Todos
+                All
               </TabsTrigger>
               <TabsTrigger 
                 value="collections" 
                 className="px-6 py-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none data-[state=active]:shadow-none"
               >
-                Colecciones
+                Collections
               </TabsTrigger>
               <TabsTrigger 
                 value="recent" 
                 className="px-6 py-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none data-[state=active]:shadow-none"
               >
-                Recientes
+                Recent
               </TabsTrigger>
               <TabsTrigger 
                 value="favorites" 
                 className="px-6 py-4 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary rounded-none data-[state=active]:shadow-none"
               >
-                Favoritos
+                Favorites
               </TabsTrigger>
             </TabsList>
             
@@ -153,8 +153,8 @@ export default function Collections() {
       {/* Header with search and actions */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Mis Colecciones</h1>
-          <p className="text-gray-600">Gestiona tus conjuntos de flashcards</p>
+          <h1 className="text-2xl font-bold text-gray-800">My Collections</h1>
+          <p className="text-gray-600">Manage your flashcard sets</p>
         </div>
         
         <div className="flex flex-col sm:flex-row w-full md:w-auto gap-2">

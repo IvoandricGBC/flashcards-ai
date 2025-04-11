@@ -237,8 +237,8 @@ export class MemStorage implements IStorage {
     // Sample collections
     const collection1: Collection = {
       id: this.collectionIdCounter++,
-      title: "Biología Celular",
-      description: "Conceptos fundamentales sobre la célula y sus componentes",
+      title: "Cell Biology",
+      description: "Fundamental concepts about cells and their components",
       createdAt: new Date(),
       favorite: true,
       userId: null
@@ -246,8 +246,8 @@ export class MemStorage implements IStorage {
     
     const collection2: Collection = {
       id: this.collectionIdCounter++,
-      title: "Historia Contemporánea",
-      description: "Eventos principales del siglo XX y XXI",
+      title: "Contemporary History",
+      description: "Major events of the 20th and 21st centuries",
       createdAt: new Date(),
       favorite: false,
       userId: null
@@ -255,8 +255,8 @@ export class MemStorage implements IStorage {
     
     const collection3: Collection = {
       id: this.collectionIdCounter++,
-      title: "Estadística Aplicada",
-      description: "Métodos estadísticos y análisis de datos",
+      title: "Applied Statistics",
+      description: "Statistical methods and data analysis",
       createdAt: new Date(),
       favorite: false,
       userId: null
@@ -266,16 +266,16 @@ export class MemStorage implements IStorage {
     this.collections.set(collection2.id, collection2);
     this.collections.set(collection3.id, collection3);
     
-    // Sample flashcards for Biología Celular
+    // Sample flashcards for Cell Biology
     const flashcard1: Flashcard = {
       id: this.flashcardIdCounter++,
-      question: "¿Cuál es la función principal de la mitocondria en la célula?",
-      correctAnswer: "Producir energía en forma de ATP a través de la respiración celular",
+      question: "What is the main function of mitochondria in the cell?",
+      correctAnswer: "Produce energy in the form of ATP through cellular respiration",
       options: [
-        "Producir energía en forma de ATP a través de la respiración celular",
-        "Sintetizar proteínas para la célula",
-        "Almacenar información genética",
-        "Digerir materiales extraños y desechos celulares"
+        "Produce energy in the form of ATP through cellular respiration",
+        "Synthesize proteins for the cell",
+        "Store genetic information",
+        "Digest foreign materials and cellular waste"
       ],
       collectionId: collection1.id,
       createdAt: new Date()
@@ -283,13 +283,13 @@ export class MemStorage implements IStorage {
     
     const flashcard2: Flashcard = {
       id: this.flashcardIdCounter++,
-      question: "¿Qué organelo es responsable de la síntesis de proteínas en la célula?",
-      correctAnswer: "Ribosoma",
+      question: "Which organelle is responsible for protein synthesis in the cell?",
+      correctAnswer: "Ribosome",
       options: [
-        "Ribosoma",
-        "Aparato de Golgi",
-        "Lisosoma",
-        "Vacuola"
+        "Ribosome",
+        "Golgi apparatus",
+        "Lysosome",
+        "Vacuole"
       ],
       collectionId: collection1.id,
       createdAt: new Date()
@@ -302,7 +302,7 @@ export class MemStorage implements IStorage {
     const activity1: Activity = {
       id: this.activityIdCounter++,
       type: "upload",
-      description: "Has subido \"Introducción a la Biología Celular.pdf\"",
+      description: "You uploaded \"Introduction to Cell Biology.pdf\"",
       userId: null,
       entityId: 1,
       entityType: "document",
@@ -312,7 +312,7 @@ export class MemStorage implements IStorage {
     const activity2: Activity = {
       id: this.activityIdCounter++,
       type: "generation",
-      description: "Se han generado 24 tarjetas para \"Biología Celular\"",
+      description: "Generated 24 cards for \"Cell Biology\"",
       userId: null,
       entityId: collection1.id,
       entityType: "collection",
@@ -322,7 +322,7 @@ export class MemStorage implements IStorage {
     const activity3: Activity = {
       id: this.activityIdCounter++,
       type: "quiz",
-      description: "Has obtenido 18/20 en el quiz de \"Historia Contemporánea\"",
+      description: "You scored 18/20 in the \"Contemporary History\" quiz",
       userId: null,
       entityId: collection2.id,
       entityType: "quiz",
