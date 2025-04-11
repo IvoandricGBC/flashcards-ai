@@ -35,6 +35,21 @@ export default function Home() {
           </Link>
         </div>
       </div>
+      
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+        <div className="flex items-start">
+          <div className="bg-blue-100 p-2 rounded-full mr-3">
+            <Info className="h-5 w-5 text-blue-600" />
+          </div>
+          <div>
+            <h3 className="font-medium text-blue-800">Document Processing Requirements</h3>
+            <p className="text-blue-700 text-sm mt-1">
+              FlashLearn uses OpenAI's API to analyze documents and generate interactive flashcards. 
+              A valid OpenAI API key with available credit is required for this functionality.
+            </p>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card>
@@ -196,4 +211,4 @@ function getActivityTitle(type: string): string {
 }
 
 // Import these at the top of the file
-import { CloudUpload, PlusCircle, HelpCircle } from "lucide-react";
+import { CloudUpload, PlusCircle, HelpCircle, Info } from "lucide-react";

@@ -251,7 +251,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create quiz completion activity
       await storage.createActivity({
         type: "quiz",
-        description: `Has obtenido ${validatedData.score}/${validatedData.totalQuestions} en el quiz de "${collection?.title || 'Colección'}"`,
+        description: `Scored ${validatedData.score}/${validatedData.totalQuestions} in "${collection?.title || 'Collection'}" quiz`,
         entityId: quizSession.id,
         entityType: "quiz",
         userId: null

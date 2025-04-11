@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DocumentUpload } from "@/components/upload/DocumentUpload";
-import { Loader2, FileX } from "lucide-react";
+import { Loader2, FileX, AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function Upload() {
   const [, navigate] = useLocation();
@@ -18,6 +19,7 @@ export default function Upload() {
   const [collectionName, setCollectionName] = useState("");
   const [collectionDescription, setCollectionDescription] = useState("");
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
+  const [showApiError, setShowApiError] = useState(false);
   
   // Generation options
   const [generateDefinitions, setGenerateDefinitions] = useState(true);
@@ -72,6 +74,7 @@ export default function Upload() {
       if (errorMessage.includes("OpenAI API quota exceeded") || 
           errorMessage.includes("exceeded your current quota") ||
           errorMessage.includes("insufficient_quota")) {
+        setShowApiError(true);
         toast({
           title: "OpenAI API Limit Reached",
           description: "The API key has reached its usage limit. Please update the API key to continue processing documents.",
@@ -117,6 +120,16 @@ export default function Upload() {
         <h1 className="text-2xl font-bold text-gray-800">Upload Document</h1>
         <p className="text-gray-600">Upload a PDF or Word document to generate flashcards</p>
       </div>
+      
+      {showApiError && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>OpenAI API Error</AlertTitle>
+          <AlertDescription>
+            The OpenAI API key has reached its usage quota. Contact your administrator to update the API key.
+          </AlertDescription>
+        </Alert>
+      )}
       
       <form onSubmit={handleSubmit}>
         <Card className="mb-6">
@@ -259,20 +272,25 @@ export default function Upload() {
           >
             Cancel
           </Button>
-          <Button
-            type="submit"
-            disabled={!selectedFile || !collectionName.trim() || uploadMutation.isPending}
-            className="bg-primary hover:bg-primary/90"
-          >
-            {uploadMutation.isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              "Process Document"
-            )}
-          </Button>
+          <div className="space-y-2">
+            <Button
+              type="submit"
+              disabled={!selectedFile || !collectionName.trim() || uploadMutation.isPending}
+              className="bg-primary hover:bg-primary/90 w-full"
+            >
+              {uploadMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Process Document"
+              )}
+            </Button>
+            <p className="text-xs text-center text-gray-500">
+              Note: Document processing requires a valid OpenAI API key with available credit
+            </p>
+          </div>
         </div>
       </form>
     </div>
