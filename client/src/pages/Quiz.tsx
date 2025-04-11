@@ -160,12 +160,12 @@ export default function Quiz() {
       <div className="fixed inset-0 bg-gray-100 flex items-center justify-center">
         <Card className="w-full max-w-3xl mx-4">
           <CardContent className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">No hay tarjetas disponibles</h2>
+            <h2 className="text-2xl font-bold mb-4">No cards available</h2>
             <p className="text-gray-600 mb-6">
-              Esta colección no tiene flashcards para realizar un quiz.
+              This collection doesn't have any flashcards for a quiz.
             </p>
             <Button onClick={() => navigate(`/collections/${collectionId}`)}>
-              Volver a la colección
+              Back to collection
             </Button>
           </CardContent>
         </Card>
@@ -179,12 +179,12 @@ export default function Quiz() {
       <div className="fixed inset-0 bg-gray-100 flex items-center justify-center">
         <Card className="w-full max-w-3xl mx-4">
           <CardContent className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">¡Quiz Completado!</h2>
+            <h2 className="text-2xl font-bold mb-4">Quiz Completed!</h2>
             <div className="text-4xl font-bold text-primary mb-6">
               {score}/{flashcards.length}
             </div>
             <p className="text-gray-600 mb-8">
-              Has completado el quiz de <span className="font-medium">{collection?.title}</span>
+              You have completed the quiz for <span className="font-medium">{collection?.title}</span>
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="outline" onClick={() => {
@@ -195,10 +195,10 @@ export default function Quiz() {
                 setQuizCompleted(false);
                 setAnsweredQuestions([]);
               }}>
-                Reintentar
+                Try Again
               </Button>
               <Button onClick={() => navigate(`/collections/${collectionId}`)}>
-                Volver a la colección
+                Back to Collection
               </Button>
             </div>
           </CardContent>
@@ -214,12 +214,12 @@ export default function Quiz() {
           <div>
             <h2 className="text-xl font-bold">Quiz: {collection?.title}</h2>
             <p className="text-sm text-gray-600">
-              Pregunta {currentQuestionIndex + 1} de {flashcards.length}
+              Question {currentQuestionIndex + 1} of {flashcards.length}
             </p>
           </div>
           <div className="flex items-center gap-4">
             <div className="bg-primary/10 text-primary font-medium px-3 py-1 rounded-full text-sm">
-              Puntuación: {score}/{answeredQuestions.length}
+              Score: {score}/{answeredQuestions.length}
             </div>
             <Button variant="ghost" size="icon" onClick={handleCloseQuiz}>
               <X className="h-5 w-5" />
@@ -277,7 +277,7 @@ export default function Quiz() {
               disabled={currentQuestionIndex === 0}
             >
               <ArrowLeft className="h-4 w-4" />
-              Anterior
+              Previous
             </Button>
             <Button
               className="gap-1"
@@ -286,11 +286,11 @@ export default function Quiz() {
             >
               {currentQuestionIndex < flashcards.length - 1 ? (
                 <>
-                  Siguiente
+                  Next
                   <ArrowRight className="h-4 w-4" />
                 </>
               ) : (
-                "Finalizar Quiz"
+                "Finish Quiz"
               )}
             </Button>
           </div>

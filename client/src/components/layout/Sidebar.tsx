@@ -8,7 +8,7 @@ export function Sidebar() {
   const [location] = useLocation();
   
   // Get collections count for storage usage
-  const { data: collections } = useQuery({ 
+  const { data: collections } = useQuery<any[]>({ 
     queryKey: ['/api/collections'],
     refetchOnWindowFocus: false
   });
