@@ -13,7 +13,7 @@ export default function Home() {
     queryKey: ['/api/activities/recent'],
   });
   
-  const { data: collections, isLoading: isLoadingCollections } = useQuery({
+  const { data: collections, isLoading: isLoadingCollections } = useQuery<any[]>({
     queryKey: ['/api/collections'],
   });
   
