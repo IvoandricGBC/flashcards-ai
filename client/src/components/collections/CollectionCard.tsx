@@ -78,11 +78,11 @@ export function CollectionCard({ collection }: CollectionCardProps) {
   const getCardIcon = () => {
     const title = collection.title.toLowerCase();
     
-    if (title.includes("biolog") || title.includes("ciencia") || title.includes("natur")) {
+    if (title.includes("biolog") || title.includes("science") || title.includes("natur")) {
       return <Book className="text-6xl text-secondary/60" />;
-    } else if (title.includes("historia") || title.includes("litera") || title.includes("art")) {
+    } else if (title.includes("histor") || title.includes("litera") || title.includes("art")) {
       return <FileText className="text-6xl text-primary/60" />;
-    } else if (title.includes("matem") || title.includes("estadistica") || title.includes("estad") || title.includes("cálc")) {
+    } else if (title.includes("math") || title.includes("statistic") || title.includes("calc")) {
       return <Parentheses className="text-6xl text-indigo-300" />;
     } else {
       return <Book className="text-6xl text-gray-400" />;
@@ -92,11 +92,11 @@ export function CollectionCard({ collection }: CollectionCardProps) {
   const getCardColorClass = () => {
     const title = collection.title.toLowerCase();
     
-    if (title.includes("biolog") || title.includes("ciencia") || title.includes("natur")) {
+    if (title.includes("biolog") || title.includes("science") || title.includes("natur")) {
       return "bg-secondary/10";
-    } else if (title.includes("historia") || title.includes("litera") || title.includes("art")) {
+    } else if (title.includes("histor") || title.includes("litera") || title.includes("art")) {
       return "bg-primary/10";
-    } else if (title.includes("matem") || title.includes("estadistica") || title.includes("estad") || title.includes("cálc")) {
+    } else if (title.includes("math") || title.includes("statistic") || title.includes("calc")) {
       return "bg-indigo-100";
     } else {
       return "bg-gray-100";

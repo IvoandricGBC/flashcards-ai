@@ -243,7 +243,7 @@ export default function Upload() {
             variant="outline"
             onClick={() => navigate("/collections")}
           >
-            Cancelar
+            Cancel
           </Button>
           <Button
             type="submit"
@@ -253,10 +253,10 @@ export default function Upload() {
             {uploadMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Procesando...
+                Processing...
               </>
             ) : (
-              "Procesar Documento"
+              "Process Document"
             )}
           </Button>
         </div>
