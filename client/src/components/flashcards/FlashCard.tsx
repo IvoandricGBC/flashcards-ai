@@ -25,7 +25,7 @@ export function FlashCard({ flashcard }: FlashCardProps) {
           </div>
           <div className="p-4 text-center">
             <Button variant="secondary" onClick={toggleFlip}>
-              Ver respuesta
+              Show answer
             </Button>
           </div>
         </Card>
@@ -33,13 +33,13 @@ export function FlashCard({ flashcard }: FlashCardProps) {
         {/* Back of card */}
         <Card className={`card-back absolute inset-0 flex flex-col bg-primary/5 ${!isFlipped ? 'hidden' : ''}`}>
           <div className="flex-1 p-6">
-            <h4 className="font-medium mb-3">Respuesta correcta:</h4>
+            <h4 className="font-medium mb-3">Correct answer:</h4>
             <p className="bg-success/20 text-success p-3 rounded-md mb-3 flex items-start">
               <CheckCircle2 className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
               <span>{flashcard.correctAnswer}</span>
             </p>
             
-            <h4 className="font-medium mb-2">Otras opciones:</h4>
+            <h4 className="font-medium mb-2">Other options:</h4>
             <ul className="space-y-2">
               {flashcard.options
                 .filter(option => option !== flashcard.correctAnswer)
@@ -50,7 +50,7 @@ export function FlashCard({ flashcard }: FlashCardProps) {
           </div>
           <div className="p-4 text-center">
             <Button variant="secondary" onClick={toggleFlip}>
-              Ver pregunta
+              Show question
             </Button>
           </div>
         </Card>

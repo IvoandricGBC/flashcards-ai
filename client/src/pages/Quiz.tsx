@@ -11,7 +11,7 @@ import { ArrowLeft, ArrowRight, X, Check } from "lucide-react";
 
 export default function Quiz() {
   const params = useParams();
-  const collectionId = parseInt(params.id);
+  const collectionId = params.id ? parseInt(params.id) : 0;
   const [, navigate] = useLocation();
   const { toast } = useToast();
   
@@ -49,15 +49,15 @@ export default function Quiz() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/activities/recent'] });
       toast({
-        title: "Quiz completado",
-        description: `Tu puntuación: ${score}/${flashcards?.length}`,
+        title: "Quiz completed",
+        description: `Your score: ${score}/${flashcards?.length}`,
         variant: "default",
       });
     },
     onError: (error) => {
       toast({
-        title: "Error al guardar la sesión de quiz",
-        description: error instanceof Error ? error.message : "Ocurrió un error inesperado",
+        title: "Error saving quiz session",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
         variant: "destructive",
       });
     },
@@ -117,7 +117,7 @@ export default function Quiz() {
   const handleCloseQuiz = () => {
     if (answeredQuestions.length > 0 && !quizCompleted) {
       // Ask for confirmation
-      if (confirm("¿Estás seguro de que deseas salir? Perderás tu progreso actual.")) {
+      if (confirm("Are you sure you want to exit? You will lose your current progress.")) {
         navigate(`/collections/${collectionId}`);
       }
     } else {
@@ -234,20 +234,20 @@ export default function Quiz() {
           
           <div className="mb-8">
             <h3 className="text-lg font-medium mb-6 text-center">
-              {currentQuestion.question}
+              {currentQuestion?.question}
             </h3>
             
             {/* Quiz Options */}
             <div className="space-y-3">
-              {currentQuestion.options.map((option, index) => (
+              {currentQuestion?.options.map((option, index) => (
                 <button
                   key={index}
                   className={`w-full text-left p-4 border rounded-lg transition-colors ${
                     selectedOption === option
-                      ? option === currentQuestion.correctAnswer
+                      ? option === currentQuestion?.correctAnswer
                         ? "border-green-500 bg-green-50"
                         : "border-red-500 bg-red-50"
-                      : isAnswerRevealed && option === currentQuestion.correctAnswer
+                      : isAnswerRevealed && option === currentQuestion?.correctAnswer
                       ? "border-green-500 bg-green-50"
                       : "border-gray-300 hover:border-primary hover:bg-primary/5"
                   }`}
@@ -257,7 +257,7 @@ export default function Quiz() {
                   <div className="flex justify-between items-center">
                     <span>{option}</span>
                     {isAnswerRevealed && (
-                      option === currentQuestion.correctAnswer ? (
+                      option === currentQuestion?.correctAnswer ? (
                         <Check className="h-5 w-5 text-green-500" />
                       ) : selectedOption === option ? (
                         <X className="h-5 w-5 text-red-500" />
