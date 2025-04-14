@@ -1,12 +1,15 @@
 declare module 'anki-apkg-export' {
-  export default class AnkiExport {
-    constructor(deckName: string, options?: { 
-      deckDescription?: string,
-      [key: string]: any 
-    });
-    
+  interface AnkiExporter {
     addCard(front: string, back: string, options?: any): void;
     addCSS(css: string): void;
     save(): Promise<Buffer>;
   }
+
+  interface AnkiExportOptions {
+    deckDescription?: string;
+    [key: string]: any;
+  }
+
+  // La función por defecto que crea un exportador
+  export default function(deckName: string, options?: AnkiExportOptions): AnkiExporter;
 }

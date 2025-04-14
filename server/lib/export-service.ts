@@ -1,6 +1,5 @@
-// La biblioteca anki-apkg-export exporta una función por defecto
-// que devuelve una instancia del exportador
-import ankiExport from 'anki-apkg-export';
+// Importamos la función de creación de exportador de Anki
+import AnkiExport from 'anki-apkg-export';
 import { Flashcard, Collection } from '@shared/schema';
 
 interface ExportOptions {
@@ -26,17 +25,13 @@ export class ExportService {
   ): Promise<Buffer> {
     try {
       // Create a new Anki package with the collection name as the deck name
-      // La biblioteca ankiExport es una función que devuelve una instancia
-      const apkg = ankiExport(collection.title, {
+      // Llamamos a la función AnkiExport para obtener una instancia del exportador
+      const apkg = AnkiExport(collection.title, {
         deckDescription: collection.description || ''
       });
       
-      // Set the options for the package
-      const ankiOptions = {
-        deckDescription: collection.description || '',
-        // We're using the 'Basic' card type which has 'Front' and 'Back' fields
-        // Front = question, Back = answer
-      };
+      // Los options ya se han pasado al crear el paquete
+      // No necesitamos crear nuevamente ankiOptions
       
       // Process each flashcard and add it to the package
       for (const card of flashcards) {
