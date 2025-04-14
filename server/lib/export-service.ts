@@ -1,4 +1,6 @@
-import AnkiExport from 'anki-apkg-export';
+// La biblioteca anki-apkg-export exporta una función por defecto
+// que devuelve una instancia del exportador
+import ankiExport from 'anki-apkg-export';
 import { Flashcard, Collection } from '@shared/schema';
 
 interface ExportOptions {
@@ -24,7 +26,10 @@ export class ExportService {
   ): Promise<Buffer> {
     try {
       // Create a new Anki package with the collection name as the deck name
-      const apkg = new AnkiExport(collection.title);
+      // La biblioteca ankiExport es una función que devuelve una instancia
+      const apkg = ankiExport(collection.title, {
+        deckDescription: collection.description || ''
+      });
       
       // Set the options for the package
       const ankiOptions = {
