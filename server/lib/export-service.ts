@@ -1,5 +1,5 @@
-// Importamos la función de creación de exportador de Anki
-import AnkiExport from 'anki-apkg-export';
+// Importamos la clase AnkiExport
+import { default as AnkiExport } from 'anki-apkg-export';
 import { Flashcard, Collection } from '@shared/schema';
 
 interface ExportOptions {
@@ -25,8 +25,8 @@ export class ExportService {
   ): Promise<Buffer> {
     try {
       // Create a new Anki package with the collection name as the deck name
-      // Llamamos a la función AnkiExport para obtener una instancia del exportador
-      const apkg = AnkiExport(collection.title, {
+      // Creamos una nueva instancia de AnkiExport
+      const apkg = new AnkiExport(collection.title, {
         deckDescription: collection.description || ''
       });
       
