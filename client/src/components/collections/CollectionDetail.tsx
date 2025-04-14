@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { Collection, Flashcard } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { FlashCard } from "@/components/flashcards/FlashCard";
+import { ExportAnkiButton } from "@/components/collections/ExportAnkiButton";
 import { ArrowLeft, Play, Edit, Download, ChevronDown } from "lucide-react";
 
 interface CollectionDetailProps {
@@ -76,8 +77,13 @@ export function CollectionDetail({ collection, flashcards, onBack }: CollectionD
             
             <Button variant="outline" onClick={handleExport}>
               <Download className="mr-2 h-4 w-4" />
-              Export
+              Export JSON
             </Button>
+            
+            <ExportAnkiButton 
+              collectionId={collection.id} 
+              disabled={flashcards.length === 0} 
+            />
           </div>
         </div>
       </div>
