@@ -1,5 +1,3 @@
-// Importamos la clase AnkiExport
-import { default as AnkiExport } from 'anki-apkg-export';
 import { Flashcard, Collection } from '@shared/schema';
 
 interface ExportOptions {
@@ -11,102 +9,96 @@ interface ExportOptions {
  */
 export class ExportService {
   /**
-   * Export a collection of flashcards to Anki package format (.apkg)
+   * Export a collection of flashcards to CSV format
    * 
    * @param collection The collection containing the flashcards
    * @param flashcards Array of flashcards to export
    * @param options Export options
-   * @returns Buffer containing the .apkg file
+   * @returns Buffer containing the CSV file
    */
-  public async exportToAnki(
+  public async exportToCSV(
     collection: Collection,
     flashcards: Flashcard[],
     options: ExportOptions = {}
   ): Promise<Buffer> {
     try {
-      // Create a new Anki package with the collection name as the deck name
-      // Creamos una nueva instancia de AnkiExport
-      const apkg = new AnkiExport(collection.title, {
-        deckDescription: collection.description || ''
-      });
+      // Create CSV headers
+      let csvContent = "Question,Answer";
       
-      // Los options ya se han pasado al crear el paquete
-      // No necesitamos crear nuevamente ankiOptions
-      
-      // Process each flashcard and add it to the package
-      for (const card of flashcards) {
-        // For the front of the card (question)
-        const front = card.question;
-        
-        // For the back of the card (answer)
-        // If we're including multiple choice, we'll format it differently
-        let back: string;
-        
-        if (options.includeMultipleChoice && card.options && card.options.length > 0) {
-          // Format with the correct answer highlighted
-          back = `<div class="answer"><strong>Correct Answer:</strong> ${card.correctAnswer}</div>`;
-          
-          if (card.options.length > 0) {
-            back += '<div class="options"><strong>Options:</strong><ul>';
-            
-            for (const option of card.options) {
-              // Highlight the correct answer in the list of options
-              const isCorrect = option === card.correctAnswer;
-              back += `<li${isCorrect ? ' class="correct"' : ''}>${option}</li>`;
-            }
-            
-            back += '</ul></div>';
-          }
-        } else {
-          // Just use the correct answer
-          back = card.correctAnswer;
-        }
-        
-        // Add the card to the package
-        apkg.addCard(front, back);
+      // If we're including multiple choice options, add columns for them
+      if (options.includeMultipleChoice) {
+        csvContent += ",Option1,Option2,Option3,Option4\n";
+      } else {
+        csvContent += "\n";
       }
       
-      // Add some basic CSS for the cards
-      apkg.addCSS(`
-        .card {
-          font-family: Arial, sans-serif;
-          font-size: 16px;
-          text-align: center;
-          color: black;
-          background-color: white;
-          padding: 20px;
+      // Process each flashcard and add it to the CSV
+      for (const card of flashcards) {
+        // Escape quotes by doubling them
+        const question = card.question.replace(/"/g, '""');
+        const answer = card.correctAnswer.replace(/"/g, '""');
+        
+        // Add the basic question/answer pair
+        csvContent += `"${question}","${answer}"`;
+        
+        // If we're including multiple choice options
+        if (options.includeMultipleChoice && card.options && card.options.length > 0) {
+          // Add each option as a separate column
+          for (let i = 0; i < 4; i++) {
+            if (i < card.options.length) {
+              const option = card.options[i].replace(/"/g, '""');
+              csvContent += `,"${option}"`;
+            } else {
+              csvContent += `,""`;
+            }
+          }
         }
         
-        .answer {
-          margin-bottom: 10px;
-        }
-        
-        .options ul {
-          list-style-type: none;
-          padding: 0;
-          text-align: left;
-        }
-        
-        .options li {
-          padding: 5px 10px;
-          margin: 3px 0;
-          border-radius: 3px;
-        }
-        
-        .options li.correct {
-          background-color: #d4edda;
-          border: 1px solid #c3e6cb;
-          color: #155724;
-          font-weight: bold;
-        }
-      `);
+        csvContent += "\n";
+      }
       
-      // Generate the package
-      const buffer = await apkg.save();
-      return buffer;
+      // Convert to Buffer
+      return Buffer.from(csvContent, 'utf-8');
     } catch (error) {
-      console.error('Error exporting collection to Anki format:', error);
-      throw new Error(`Failed to export collection to Anki format: ${(error as Error).message}`);
+      console.error('Error exporting collection to CSV format:', error);
+      throw new Error(`Failed to export collection to CSV format: ${(error as Error).message}`);
+    }
+  }
+  
+  /**
+   * Export a collection of flashcards to JSON format
+   * 
+   * @param collection The collection containing the flashcards
+   * @param flashcards Array of flashcards to export
+   * @returns Buffer containing the JSON file
+   */
+  public async exportToJSON(
+    collection: Collection,
+    flashcards: Flashcard[]
+  ): Promise<Buffer> {
+    try {
+      // Create a JSON object with collection info and flashcards
+      const exportData = {
+        collection: {
+          title: collection.title,
+          description: collection.description,
+          createdAt: collection.createdAt
+        },
+        flashcards: flashcards.map(card => ({
+          question: card.question,
+          answer: card.correctAnswer,
+          options: card.options || []
+        }))
+      };
+      
+      // Convert to JSON string with pretty formatting
+      const jsonString = JSON.stringify(exportData, null, 2);
+      
+      // Convert to Buffer
+      return Buffer.from(jsonString, 'utf-8');
+    } catch (error) {
+      console.error('Error exporting collection to JSON format:', error);
+      throw new Error(`Failed to export collection to JSON format: ${(error as Error).message}`);
     }
   }
 }
