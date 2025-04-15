@@ -196,20 +196,7 @@ export function GenkiDeckView({ flashcards, collectionId, onClose }: GenkiDeckVi
                     className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center backface-hidden"
                     style={{ transform: "rotateY(180deg)" }}
                   >
-                    <h3 className="text-2xl font-bold text-primary mb-4">{currentCard.correctAnswer}</h3>
-                    
-                    {currentCard.options && currentCard.options.length > 0 && (
-                      <div className="mt-4 grid grid-cols-1 gap-2 text-left w-full">
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Other options:</p>
-                        {currentCard.options
-                          .filter(option => option !== currentCard.correctAnswer)
-                          .map((option, i) => (
-                            <div key={i} className="p-2 rounded-md bg-gray-100 dark:bg-gray-600 text-sm">
-                              {option}
-                            </div>
-                          ))}
-                      </div>
-                    )}
+                    <h3 className="text-2xl font-bold text-primary">{currentCard.correctAnswer}</h3>
                   </div>
                 )}
               </motion.div>

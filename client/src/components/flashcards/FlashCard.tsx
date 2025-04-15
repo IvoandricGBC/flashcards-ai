@@ -130,26 +130,16 @@ export function FlashCard({ flashcard }: FlashCardProps) {
             {CardIcon}
           </div>
           <div className="flex-1 p-6 overflow-auto custom-scrollbar">
-            <div className="mt-2 mb-4 flex items-center justify-between">
-              <h4 className="font-medium text-primary text-lg">Correct answer:</h4>
+            <div className="mb-4 flex items-center justify-between">
+              <h4 className="font-medium text-primary text-lg">Answer:</h4>
               <span className="text-xs text-gray-500">Card #{flashcard.id}</span>
             </div>
-            <p className="bg-success/10 text-success-foreground p-3 rounded-md mb-4 flex items-start border border-success/20">
-              <CheckCircle2 className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0 text-success" />
-              <span className="font-medium">{flashcard.correctAnswer}</span>
-            </p>
-            
-            <h4 className="font-medium mb-2 text-primary">Other options:</h4>
-            <ul className="space-y-2 mb-2">
-              {flashcard.options && flashcard.options.length > 0 
-                ? flashcard.options
-                    .filter(option => option !== flashcard.correctAnswer)
-                    .map((option, index) => (
-                      <li key={index} className="bg-gray-50 p-3 rounded-md border border-gray-100 text-gray-700 hover:bg-gray-100 transition-colors">{option}</li>
-                    ))
-                : <li className="text-gray-500 italic">No additional options available</li>
-              }
-            </ul>
+            <div className="flex justify-center items-center flex-1">
+              <p className="bg-success/10 text-success-foreground p-4 rounded-md flex items-center border border-success/20 text-center">
+                <CheckCircle2 className="h-5 w-5 mr-2 flex-shrink-0 text-success" />
+                <span className="font-medium text-lg">{flashcard.correctAnswer}</span>
+              </p>
+            </div>
           </div>
           <div className="p-4 text-center bg-gray-50 border-t border-gray-100">
             <Button 

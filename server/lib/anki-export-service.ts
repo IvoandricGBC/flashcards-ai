@@ -21,24 +21,8 @@ export class AnkiExportService {
       // Escape double quotes by doubling them
       const question = card.question.replace(/"/g, '""');
       
-      // Format the back of the card
+      // Format the back of the card - only include the correct answer
       let answer = card.correctAnswer.replace(/"/g, '""');
-      
-      // If the card has options, add them to the back
-      if (card.options && card.options.length > 0) {
-        answer += '<br><br><div style="font-size: 0.9em; color: #555;">Options:</div><ul>';
-        
-        for (const option of card.options) {
-          const isCorrect = option === card.correctAnswer;
-          if (isCorrect) {
-            answer += `<li><strong style="color: #2e7d32;">${option}</strong></li>`;
-          } else {
-            answer += `<li>${option}</li>`;
-          }
-        }
-        
-        answer += '</ul>';
-      }
       
       // Add row to CSV - Anki format is front,back,tags
       csvContent += `"${question}","${answer}","flashcards"\n`;
