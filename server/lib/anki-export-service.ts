@@ -44,7 +44,7 @@ export class AnkiExportService {
   ): Promise<Buffer> {
     try {
       // Create a new Anki exporter with the collection title as the deck name
-      const apkg = AnkiExport(collection.title, { 
+      const apkg = new AnkiExport(collection.title, { 
         deckDescription: collection.description || 'Exported from FlashcardAI'
       });
       
@@ -56,21 +56,7 @@ export class AnkiExportService {
         // Format the back side (answer)
         let back = `<div style="font-size: 1.2em; color: #1976d2; font-weight: bold;">${card.correctAnswer}</div>`;
         
-        // If the card has options, add them to the back
-        if (card.options && card.options.length > 0) {
-          back += '<hr><div style="font-size: 0.9em; color: #555;">Options:</div><ul>';
-          
-          for (const option of card.options) {
-            const isCorrect = option === card.correctAnswer;
-            if (isCorrect) {
-              back += `<li><strong style="color: #2e7d32;">${option}</strong></li>`;
-            } else {
-              back += `<li>${option}</li>`;
-            }
-          }
-          
-          back += '</ul>';
-        }
+        // Ya no mostramos las opciones, solo la respuesta correcta
         
         // Add the card to the package
         apkg.addCard(front, back, { tags: ['flashcards'] });

@@ -25,12 +25,8 @@ export class ExportService {
       // Create CSV headers
       let csvContent = "Question,Answer";
       
-      // If we're including multiple choice options, add columns for them
-      if (options.includeMultipleChoice) {
-        csvContent += ",Option1,Option2,Option3,Option4\n";
-      } else {
-        csvContent += "\n";
-      }
+      // Solo incluimos pregunta y respuesta, sin opciones múltiples
+      csvContent += "\n";
       
       // Process each flashcard and add it to the CSV
       for (const card of flashcards) {
@@ -41,18 +37,7 @@ export class ExportService {
         // Add the basic question/answer pair
         csvContent += `"${question}","${answer}"`;
         
-        // If we're including multiple choice options
-        if (options.includeMultipleChoice && card.options && card.options.length > 0) {
-          // Add each option as a separate column
-          for (let i = 0; i < 4; i++) {
-            if (i < card.options.length) {
-              const option = card.options[i].replace(/"/g, '""');
-              csvContent += `,"${option}"`;
-            } else {
-              csvContent += `,""`;
-            }
-          }
-        }
+        // Ya no incluimos opciones múltiples
         
         csvContent += "\n";
       }
@@ -86,8 +71,7 @@ export class ExportService {
         },
         flashcards: flashcards.map(card => ({
           question: card.question,
-          answer: card.correctAnswer,
-          options: card.options || []
+          answer: card.correctAnswer
         }))
       };
       
