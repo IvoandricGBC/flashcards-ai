@@ -1,5 +1,5 @@
 import { Flashcard, Collection } from '@shared/schema';
-import * as JSZip from 'jszip';
+import JSZip from 'jszip';
 import { v4 as uuidv4 } from 'uuid';
 
 /**

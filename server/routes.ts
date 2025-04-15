@@ -13,6 +13,7 @@ import {
 import { processDocumentAndGenerateFlashcards, processDocumentBuffer, extractPdfText, extractWordText } from "./lib/document-processor";
 import { generateSummaryFromText, generateFlashcardsFromText } from "./lib/openai";
 import { exportService } from "./lib/export-service";
+import { ankiExportService } from "./lib/anki-export-service";
 import { z } from "zod";
 
 // Set up multer for file uploads
@@ -628,6 +629,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error exporting to JSON format:", error);
       res.status(500).json({ 
         message: "Failed to export collection to JSON format", 
+        error: (error as Error).message 
+      });
+    }
+  });
+
+  // Export flashcards to Anki import format (special CSV format)
+  app.get("/api/export-anki/:collectionId", async (req: Request, res: Response) => {
+    try {
+      // Parse and validate the collection ID
+      const collectionId = parseInt(req.params.collectionId);
+      if (isNaN(collectionId)) {
+        return res.status(400).json({ message: "Invalid collection ID" });
+      }
+      
+      // Get the collection
+      const collection = await storage.getCollection(collectionId);
+      if (!collection) {
+        return res.status(404).json({ message: "Collection not found" });
+      }
+      
+      // Get all flashcards for the collection
+      const flashcards = await storage.getFlashcards(collectionId);
+      if (flashcards.length === 0) {
+        return res.status(404).json({ message: "No flashcards found in this collection" });
+      }
+      
+      // Generate the Anki-compatible CSV file
+      const csvContent = ankiExportService.createAnkiImportCSV(flashcards);
+      const csvData = Buffer.from(csvContent, 'utf-8');
+      
+      // Create export activity
+      await storage.createActivity({
+        type: "export",
+        description: `Exported "${collection.title}" collection to Anki import format`,
+        entityId: collection.id,
+        entityType: "collection",
+        userId: null
+      });
+      
+      // Send the file as a download
+      const sanitizedTitle = collection.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '_')
+        .replace(/_+/g, '_');
+        
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="${sanitizedTitle}_anki.csv"`);
+      res.setHeader('Content-Length', csvData.length);
+      res.send(csvData);
+    } catch (error) {
+      console.error("Error exporting to Anki format:", error);
+      res.status(500).json({ 
+        message: "Failed to export collection to Anki format", 
         error: (error as Error).message 
       });
     }
