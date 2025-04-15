@@ -105,43 +105,7 @@ export function ExportButton({
     }
   };
 
-  const handleExportApkg = async () => {
-    try {
-      setIsExporting(true);
-      
-      // Create a link element
-      const link = document.createElement('a');
-      
-      // Set the link's href to the API endpoint
-      link.href = `/api/export-apkg/${collectionId}`;
-      
-      // Set download attribute to force download
-      link.setAttribute('download', '');
-      
-      // Append to the document
-      document.body.appendChild(link);
-      
-      // Trigger a click on the link
-      link.click();
-      
-      // Remove the link from the document
-      document.body.removeChild(link);
-      
-      toast({
-        title: 'Export successful',
-        description: 'The flashcards have been exported to Anki package format (.apkg)',
-      });
-    } catch (error) {
-      console.error('Error during export:', error);
-      toast({
-        title: 'Export failed',
-        description: 'There was an error exporting the flashcards',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsExporting(false);
-    }
-  };
+
 
   return (
     <DropdownMenu>
@@ -171,9 +135,6 @@ export function ExportButton({
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleExportAnki}>
           Export for Anki (CSV)
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleExportApkg}>
-          Export for Anki (.apkg)
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
