@@ -101,7 +101,31 @@ export function GenkiDeckView({ flashcards, collectionId, onClose }: GenkiDeckVi
       
       toast({
         title: 'Export successful',
-        description: 'The flashcards have been exported to Anki import format',
+        description: 'The flashcards have been exported to Anki import format (CSV)',
+      });
+    } catch (error) {
+      console.error('Error during export:', error);
+      toast({
+        title: 'Export failed',
+        description: 'There was an error exporting the flashcards',
+        variant: 'destructive',
+      });
+    }
+  };
+  
+  const handleExportApkg = async () => {
+    try {
+      // Create a link element
+      const link = document.createElement('a');
+      link.href = `/api/export-apkg/${collectionId}`;
+      link.setAttribute('download', '');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: 'Export successful',
+        description: 'The flashcards have been exported to Anki package format (.apkg)',
       });
     } catch (error) {
       console.error('Error during export:', error);
@@ -264,7 +288,10 @@ export function GenkiDeckView({ flashcards, collectionId, onClose }: GenkiDeckVi
                 Export as CSV
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleExportAnki}>
-                Export for Anki
+                Export for Anki (CSV)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportApkg}>
+                Export for Anki (.apkg)
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
