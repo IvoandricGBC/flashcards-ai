@@ -60,7 +60,7 @@ export class AnkiExportService {
   ): Promise<Buffer> {
     try {
       // Create a new Anki exporter with the collection title as the deck name
-      const apkg = new AnkiExport(collection.title, { 
+      const apkg = AnkiExport(collection.title, { 
         deckDescription: collection.description || 'Exported from FlashcardAI'
       });
       
