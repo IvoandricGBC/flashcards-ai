@@ -205,9 +205,6 @@ export function ExportButton({
         <DropdownMenuItem onClick={handleExportCSV}>
           Export as CSV
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleExportJSON}>
-          Export as JSON
-        </DropdownMenuItem>
         <DropdownMenuItem onClick={handleExportAnki}>
           Export for Anki (CSV)
         </DropdownMenuItem>

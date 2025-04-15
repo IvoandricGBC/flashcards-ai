@@ -1,5 +1,5 @@
 import { Flashcard, Collection } from '@shared/schema';
-import AnkiExporter from 'anki-apkg-export';
+import AnkiExport from 'anki-apkg-export';
 
 /**
  * Service to create Anki-compatible export files
@@ -59,7 +59,7 @@ export class AnkiExportService {
   ): Promise<Buffer> {
     try {
       // Create a new Anki exporter with the collection title as the deck name
-      const apkg = new AnkiExporter(collection.title, { 
+      const apkg = AnkiExport(collection.title, { 
         deckDescription: collection.description || 'Exported from FlashcardAI'
       });
       
