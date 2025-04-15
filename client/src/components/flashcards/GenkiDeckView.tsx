@@ -1,9 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { Flashcard } from '@shared/schema';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, RotateCcw, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RotateCcw, Download, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface GenkiDeckViewProps {
   flashcards: Flashcard[];
@@ -72,6 +78,30 @@ export function GenkiDeckView({ flashcards, collectionId, onClose }: GenkiDeckVi
       toast({
         title: 'Export successful',
         description: 'The flashcards have been exported to CSV format',
+      });
+    } catch (error) {
+      console.error('Error during export:', error);
+      toast({
+        title: 'Export failed',
+        description: 'There was an error exporting the flashcards',
+        variant: 'destructive',
+      });
+    }
+  };
+  
+  const handleExportAnki = async () => {
+    try {
+      // Create a link element
+      const link = document.createElement('a');
+      link.href = `/api/export-anki/${collectionId}`;
+      link.setAttribute('download', '');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: 'Export successful',
+        description: 'The flashcards have been exported to Anki import format',
       });
     } catch (error) {
       console.error('Error during export:', error);
@@ -222,14 +252,22 @@ export function GenkiDeckView({ flashcards, collectionId, onClose }: GenkiDeckVi
             </Button>
           </div>
           
-          <Button 
-            onClick={handleExportCSV}
-            variant="secondary"
-            size="sm"
-          >
-            <Download className="mr-1 h-4 w-4" />
-            Export CSV
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="sm">
+                <Download className="mr-1 h-4 w-4" />
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleExportCSV}>
+                Export as CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportAnki}>
+                Export for Anki
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>
