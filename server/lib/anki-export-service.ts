@@ -1,4 +1,5 @@
 import { Flashcard, Collection } from '@shared/schema';
+// @ts-ignore - Hay problemas de tipado con esta biblioteca
 import AnkiExport from 'anki-apkg-export';
 
 /**
@@ -59,7 +60,7 @@ export class AnkiExportService {
   ): Promise<Buffer> {
     try {
       // Create a new Anki exporter with the collection title as the deck name
-      const apkg = AnkiExport(collection.title, { 
+      const apkg = new AnkiExport(collection.title, { 
         deckDescription: collection.description || 'Exported from FlashcardAI'
       });
       
@@ -88,7 +89,7 @@ export class AnkiExportService {
         }
         
         // Add the card to the package
-        apkg.addCard(front, back);
+        apkg.addCard(front, back, { tags: ['flashcards'] });
       }
       
       // Add custom CSS for better styling
