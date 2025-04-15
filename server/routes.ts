@@ -582,57 +582,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Export flashcards to JSON format
-  app.get("/api/export-json/:collectionId", async (req: Request, res: Response) => {
-    try {
-      // Parse and validate the collection ID
-      const collectionId = parseInt(req.params.collectionId);
-      if (isNaN(collectionId)) {
-        return res.status(400).json({ message: "Invalid collection ID" });
-      }
-      
-      // Get the collection
-      const collection = await storage.getCollection(collectionId);
-      if (!collection) {
-        return res.status(404).json({ message: "Collection not found" });
-      }
-      
-      // Get all flashcards for the collection
-      const flashcards = await storage.getFlashcards(collectionId);
-      if (flashcards.length === 0) {
-        return res.status(404).json({ message: "No flashcards found in this collection" });
-      }
-      
-      // Generate the JSON file
-      const jsonData = await exportService.exportToJSON(collection, flashcards);
-      
-      // Create export activity
-      await storage.createActivity({
-        type: "export",
-        description: `Exported "${collection.title}" collection to JSON format`,
-        entityId: collection.id,
-        entityType: "collection",
-        userId: null
-      });
-      
-      // Send the file as a download
-      const sanitizedTitle = collection.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, '_')
-        .replace(/_+/g, '_');
-        
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', `attachment; filename="${sanitizedTitle}.json"`);
-      res.setHeader('Content-Length', jsonData.length);
-      res.send(jsonData);
-    } catch (error) {
-      console.error("Error exporting to JSON format:", error);
-      res.status(500).json({ 
-        message: "Failed to export collection to JSON format", 
-        error: (error as Error).message 
-      });
-    }
-  });
+
 
   // Export flashcards to Anki import format (special CSV format)
   app.get("/api/export-anki/:collectionId", async (req: Request, res: Response) => {
