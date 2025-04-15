@@ -4,7 +4,8 @@ import { Collection, Flashcard } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { FlashCard } from "@/components/flashcards/FlashCard";
 import { ExportButton } from "@/components/collections/ExportButton";
-import { ArrowLeft, Play, Edit, Download, ChevronDown } from "lucide-react";
+import { GenkiDeckView } from "@/components/flashcards/GenkiDeckView";
+import { ArrowLeft, Play, Edit, Download, ChevronDown, BookOpen } from "lucide-react";
 
 interface CollectionDetailProps {
   collection: Collection;
@@ -15,6 +16,7 @@ interface CollectionDetailProps {
 export function CollectionDetail({ collection, flashcards, onBack }: CollectionDetailProps) {
   const [, navigate] = useLocation();
   const [visibleCards, setVisibleCards] = useState(6);
+  const [isGenkiViewOpen, setIsGenkiViewOpen] = useState(false);
   
   const handleStartQuiz = () => {
     navigate(`/quiz/${collection.id}`);
@@ -46,6 +48,16 @@ export function CollectionDetail({ collection, flashcards, onBack }: CollectionD
     URL.revokeObjectURL(url);
   };
   
+  const handleOpenGenkiView = () => {
+    if (flashcards && flashcards.length > 0) {
+      setIsGenkiViewOpen(true);
+    }
+  };
+  
+  const handleCloseGenkiView = () => {
+    setIsGenkiViewOpen(false);
+  };
+  
   const loadMoreCards = () => {
     setVisibleCards(prev => Math.min(prev + 6, flashcards.length));
   };
@@ -68,6 +80,15 @@ export function CollectionDetail({ collection, flashcards, onBack }: CollectionD
             <Button className="bg-primary hover:bg-primary/90" onClick={handleStartQuiz}>
               <Play className="mr-2 h-4 w-4" />
               Start Quiz
+            </Button>
+            
+            <Button 
+              variant="secondary" 
+              onClick={handleOpenGenkiView}
+              disabled={flashcards.length === 0}
+            >
+              <BookOpen className="mr-2 h-4 w-4" />
+              Genki Deck View
             </Button>
             
             <Button variant="outline">
@@ -130,6 +151,15 @@ export function CollectionDetail({ collection, flashcards, onBack }: CollectionD
           </>
         )}
       </div>
+      
+      {/* Genki Deck View Modal */}
+      {isGenkiViewOpen && flashcards && flashcards.length > 0 && (
+        <GenkiDeckView 
+          flashcards={flashcards} 
+          collectionId={collection.id}
+          onClose={handleCloseGenkiView} 
+        />
+      )}
     </div>
   );
 }
